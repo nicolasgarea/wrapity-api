@@ -1,8 +1,13 @@
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from app.core.exceptions import (
+    AlbumAlreadyInFavoritesException,
     EmailAlreadyExistsException,
+    FavoriteNotFoundException,
+    FavoriteSlotAlreadyOccupedException,
+    InvalidFavoritePositionException,
     ReviewNotFoundException,
+    UnauthorizedFavoriteAccessException,
     UnauthorizedReviewAccessException,
     UserNotFoundException,
     UsernameAlreadyExistsException,
@@ -42,3 +47,31 @@ def register_exception_handlers(app):
     @app.exception_handler(UserNotFoundException)
     def user_not_found_handler(request: Request, exc: UserNotFoundException):
         return JSONResponse(status_code=404, content={"detail": str(exc)})
+
+    @app.exception_handler(UnauthorizedFavoriteAccessException)
+    def unauthorized_favorite_access_handler(
+        request: Request, exc: UnauthorizedFavoriteAccessException
+    ):
+        return JSONResponse(status_code=403, content={"detail": str(exc)})
+
+    @app.exception_handler(FavoriteNotFoundException)
+    def favorite_not_found_handler(request: Request, exc: FavoriteNotFoundException):
+        return JSONResponse(status_code=404, content={"detail": str(exc)})
+
+    @app.exception_handler(InvalidFavoritePositionException)
+    def invalid_favorite_position_handler(
+        request: Request, exc: InvalidFavoritePositionException
+    ):
+        return JSONResponse(status_code=400, content={"detail": str(exc)})
+
+    @app.exception_handler(AlbumAlreadyInFavoritesException)
+    def album_already_in_favorites_handler(
+        request: Request, exc: AlbumAlreadyInFavoritesException
+    ):
+        return JSONResponse(status_code=400, content={"detail": str(exc)})
+
+    @app.exception_handler(FavoriteSlotAlreadyOccupedException)
+    def favorite_slot_already_occupied_handler(
+        request: Request, exc: FavoriteSlotAlreadyOccupedException
+    ):
+        return JSONResponse(status_code=400, content={"detail": str(exc)})
