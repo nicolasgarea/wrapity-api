@@ -29,3 +29,11 @@ def update_me(
 ) -> UserResponse:
     updated_user = user_service.update_user(current_user, user_update)
     return updated_user
+
+
+@router.get("/{user_id}", response_model=UserResponse)
+def get_user_by_id(
+    user_id: int, user_service: UserService = Depends(get_user_service)
+) -> UserResponse:
+    user = user_service.get_user_by_id(user_id)
+    return user

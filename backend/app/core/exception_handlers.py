@@ -4,6 +4,7 @@ from app.core.exceptions import (
     EmailAlreadyExistsException,
     ReviewNotFoundException,
     UnauthorizedReviewAccessException,
+    UserNotFoundException,
     UsernameAlreadyExistsException,
     InvalidCredentialsException,
     InvalidTokenException,
@@ -37,3 +38,7 @@ def register_exception_handlers(app):
         request: Request, exc: UnauthorizedReviewAccessException
     ):
         return JSONResponse(status_code=403, content={"detail": str(exc)})
+
+    @app.exception_handler(UserNotFoundException)
+    def user_not_found_handler(request: Request, exc: UserNotFoundException):
+        return JSONResponse(status_code=404, content={"detail": str(exc)})
