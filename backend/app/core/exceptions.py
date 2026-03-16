@@ -24,3 +24,23 @@ class UnauthorizedReviewAccessException(Exception):
 
 class UserNotFoundException(Exception):
     pass
+
+
+class UnauthorizedFavoriteAccessException(Exception):
+    pass
+
+
+class FavoriteNotFoundException(Exception):
+    pass
+
+
+class InvalidFavoritePositionException(Exception):
+    pass
+
+
+class FavoriteSlotAlreadyOccupedException(Exception):
+    pass
+
+
+class AlbumAlreadyInFavoritesException(Exception):
+    pass
