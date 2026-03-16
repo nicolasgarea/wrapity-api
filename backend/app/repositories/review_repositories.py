@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from app.schemas.review_schemas import ReviewUpdate
 from sqlalchemy.orm import Session
 from app.models.review import Review
@@ -30,6 +32,8 @@ class ReviewRepository:
             review.content = review_update.content
         if review_update.rating is not None:
             review.rating = review_update.rating
+        if review_update.rating or review_update.content:
+            review.updated_at = datetime.now(timezone.utc)
 
         self.db.commit()
         self.db.refresh(review)
