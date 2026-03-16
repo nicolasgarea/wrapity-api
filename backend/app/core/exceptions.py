@@ -12,3 +12,11 @@ class UsernameAlreadyExistsException(Exception):
 
 class InvalidCredentialsException(Exception):
     pass
+
+
+class ReviewNotFoundException(Exception):
+    pass
+
+
+class UnauthorizedReviewAccessException(Exception):
+    pass
