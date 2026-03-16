@@ -4,7 +4,7 @@ from app.core.dependencies import get_current_user
 from app.db.database import get_db
 from app.models.user import User
 from app.repositories.user_repositories import UserRepository
-from app.schemas.user_schemas import UserResponse, UserUpdate
+from app.schemas.user_schemas import UserProfileResponse, UserResponse, UserUpdate
 from app.services.user_services import UserService
 
 
@@ -31,9 +31,9 @@ def update_me(
     return updated_user
 
 
-@router.get("/{user_id}", response_model=UserResponse)
+@router.get("/{user_id}", response_model=UserProfileResponse)
 def get_user_by_id(
     user_id: int, user_service: UserService = Depends(get_user_service)
-) -> UserResponse:
+) -> UserProfileResponse:
     user = user_service.get_user_by_id(user_id)
     return user
