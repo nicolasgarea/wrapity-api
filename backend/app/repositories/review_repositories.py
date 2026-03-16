@@ -25,11 +25,11 @@ class ReviewRepository:
         review = self.db.query(Review).filter_by(id=review_id).first()
         return review
 
-    def update(self, review: Review, reviewUpdate: ReviewUpdate) -> Review:
-        if reviewUpdate.content is not None:
-            review.content = reviewUpdate.content
-        if reviewUpdate.rating is not None:
-            review.rating = reviewUpdate.rating
+    def update(self, review: Review, review_update: ReviewUpdate) -> Review:
+        if review_update.content is not None:
+            review.content = review_update.content
+        if review_update.rating is not None:
+            review.rating = review_update.rating
 
         self.db.commit()
         self.db.refresh(review)
