@@ -20,3 +20,7 @@ class ReviewNotFoundException(Exception):
 
 class UnauthorizedReviewAccessException(Exception):
     pass
+
+
+class UserNotFoundException(Exception):
+    pass
