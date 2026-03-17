@@ -31,6 +31,13 @@ def add_favorite(
     return favorite
 
 
+@router.get("/user/{user_id}", response_model=list[FavoriteResponse])
+def get_favorites_by_user(
+    user_id: int, favorite_service: FavoriteService = Depends(get_favorite_service)
+) -> list[FavoriteResponse]:
+    return favorite_service.get_user_favorites(user_id)
+
+
 @router.patch("/{favorite_id}", response_model=FavoriteResponse)
 def update_favorite(
     favorite_id: int,
