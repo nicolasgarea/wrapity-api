@@ -6,7 +6,7 @@ from app.core.exceptions import (
 from app.core.security import create_access_token, hash_password, verify_password
 from app.models.user import User
 from app.repositories.user_repositories import UserRepository
-from app.schemas.user_schemas import UserLogin, UserRegister, UserResponse
+from app.schemas.user_schemas import UserLogin, UserRegister
 
 
 class Auth:
