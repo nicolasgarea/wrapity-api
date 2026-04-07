@@ -1,15 +1,15 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, EmailStr
 
 
 class UserRegister(BaseModel):
-    username: str
-    email: str
-    password: str
+    username: str = Field(..., min_length=3, max_length=20)
+    email: EmailStr
+    password: str = Field(..., min_length=8)
 
 
 class UserLogin(BaseModel):
-    email: str
-    password: str
+    email: EmailStr
+    password: str = Field(..., min_length=1)
 
 
 class UserResponse(BaseModel):
@@ -22,6 +22,6 @@ class UserResponse(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    username: str | None = None
-    bio: str | None = None
+    username: str | None = Field(None, min_length=3, max_length=20)
+    bio: str | None = Field(None, max_length=500)
     avatar_url: str | None = None

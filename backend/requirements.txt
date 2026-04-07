@@ -3,11 +3,23 @@ annotated-doc==0.0.4
 annotated-types==0.7.0
 anyio==4.12.1
 bcrypt==4.0.1
+<<<<<<< Updated upstream
 cffi==2.0.0
 click==8.3.1
 colorama==0.4.6
 cryptography==46.0.5
 ecdsa==0.19.1
+=======
+certifi==2026.2.25
+cffi==2.0.0
+click==8.3.1
+cloudinary==1.44.1
+colorama==0.4.6
+cryptography==46.0.5
+dnspython==2.8.0
+ecdsa==0.19.1
+email-validator==2.3.0
+>>>>>>> Stashed changes
 fastapi==0.135.1
 greenlet==3.3.2
 h11==0.16.0
@@ -27,6 +39,10 @@ PyMySQL==1.1.2
 pytest==9.0.2
 python-dotenv==1.2.2
 python-jose==3.5.0
+<<<<<<< Updated upstream
+=======
+python-multipart==0.0.24
+>>>>>>> Stashed changes
 rsa==4.9.1
 ruff==0.15.5
 six==1.17.0
@@ -34,4 +50,5 @@ SQLAlchemy==2.0.48
 starlette==0.52.1
 typing-inspection==0.4.2
 typing_extensions==4.15.0
+urllib3==2.6.3
 uvicorn==0.41.0

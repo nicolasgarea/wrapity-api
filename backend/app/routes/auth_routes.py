@@ -24,7 +24,15 @@ def register(
     return Token(access_token=token, token_type="bearer")
 
 
-@router.post("/login", status_code=status.HTTP_200_OK, response_model=Token)
+@router.post(
+    "/login",
+    status_code=status.HTTP_200_OK,
+    response_model=Token,
+    responses={
+        401: {"description": "Invalid credentials"},
+        404: {"description": "User not found"},
+    },
+)
 def login(
     user_data: UserLogin, auth_service: Auth = Depends(get_auth_service)
 ) -> Token:

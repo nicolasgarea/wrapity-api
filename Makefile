@@ -5,3 +5,6 @@ format:
 
 run:
 	cd backend && venv/bin/uvicorn app.main:app --reload
+
+test: 
+	cd backend && venv/bin/python -m pytest
