@@ -17,3 +17,6 @@ venv/
 
 # ENV
 .env
+
+# Schematesis
+.hypothesis
