@@ -2,7 +2,6 @@ from unittest.mock import MagicMock
 
 from app.models.favorite import Favorite
 from app.repositories.favorite_repositories import FavoriteRepository
-from app.schemas.favorite_schemas import FavoriteUpdate
 from app.services.favorite_services import FavoriteService
 from app.core.exceptions import (
     FavoriteNotFoundException,
@@ -34,15 +33,14 @@ def make_favorite():
     return _make_favorite
 
 
-def fake_update(favorite, update):
-    favorite.position = update.position
+def fake_update(favorite, position):
+    favorite.position = position
     return favorite
 
 
 def test_favorite_swap(favorite_repository, favorite_service, make_favorite):
     favorite_a = make_favorite(id=1, user_id=1, album_id="album-1", position=2)
     favorite_b = make_favorite(id=2, user_id=1, album_id="album-2", position=4)
-    favorite_update = FavoriteUpdate(position=4)
     favorite_repository.get_by_id.return_value = favorite_a
     favorite_service.favorite_repository.get_by_user_id.return_value = [
         favorite_a,
@@ -52,7 +50,7 @@ def test_favorite_swap(favorite_repository, favorite_service, make_favorite):
     favorite_service.update_favorite(
         user_id=favorite_a.user_id,
         favorite_id=favorite_a.id,
-        favorite_update=favorite_update,
+        position=4,
     )
     assert favorite_a.position == 4
     assert favorite_b.position == 2
@@ -62,11 +60,7 @@ def test_update_not_found(favorite_repository, favorite_service, make_favorite):
     favorite = make_favorite(id=1, user_id=1, album_id="album-1", position=2)
     favorite_repository.get_by_id.return_value = None
     with pytest.raises(FavoriteNotFoundException):
-        favorite_service.update_favorite(
-            user_id=1,
-            favorite_id=favorite.id,
-            favorite_update=FavoriteUpdate(position=3),
-        )
+        favorite_service.update_favorite(user_id=1, favorite_id=favorite.id, position=3)
 
 
 def test_delete_not_found(favorite_repository, favorite_service, make_favorite):
@@ -80,11 +74,7 @@ def test_update_unauthorized(favorite_repository, favorite_service, make_favorit
     favorite = make_favorite(id=1, user_id=1, album_id="album-1", position=2)
     favorite_repository.get_by_id.return_value = favorite
     with pytest.raises(UnauthorizedFavoriteAccessException):
-        favorite_service.update_favorite(
-            user_id=2,
-            favorite_id=favorite.id,
-            favorite_update=FavoriteUpdate(position=3),
-        )
+        favorite_service.update_favorite(user_id=2, favorite_id=favorite.id, position=3)
 
 
 def test_delete_unauthorized(favorite_repository, favorite_service, make_favorite):

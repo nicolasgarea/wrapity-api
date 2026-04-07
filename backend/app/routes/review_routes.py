@@ -24,7 +24,12 @@ def create(
     review_service: ReviewService = Depends(get_review_service),
 ) -> ReviewResponse:
 
-    review = review_service.create(review_schema, current_user.id)
+    review = review_service.create(
+        review_schema.album_id,
+        review_schema.rating,
+        review_schema.content,
+        current_user.id,
+    )
     return review
 
 
@@ -63,7 +68,10 @@ def update_review(
     review_service: ReviewService = Depends(get_review_service),
 ) -> ReviewResponse:
     review = review_service.update(
-        user_id=current_user.id, review_id=review_id, review_update_schema=review_schema
+        user_id=current_user.id,
+        review_id=review_id,
+        rating=review_schema.rating,
+        content=review_schema.content,
     )
     return review
 

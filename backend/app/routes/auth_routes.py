@@ -20,7 +20,9 @@ def get_auth_service(db: Session = Depends(get_db)) -> Auth:
 def register(
     user_data: UserRegister, auth_service: Auth = Depends(get_auth_service)
 ) -> Token:
-    token = auth_service.register_user(user_data)
+    token = auth_service.register_user(
+        user_data.username, user_data.email, user_data.password
+    )
     return Token(access_token=token, token_type="bearer")
 
 
@@ -36,5 +38,5 @@ def register(
 def login(
     user_data: UserLogin, auth_service: Auth = Depends(get_auth_service)
 ) -> Token:
-    token = auth_service.login_user(user_data)
+    token = auth_service.login_user(user_data.email, user_data.password)
     return Token(access_token=token, token_type="bearer")

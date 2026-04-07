@@ -1,6 +1,5 @@
 from datetime import datetime, timezone
 
-from app.schemas.review_schemas import ReviewUpdate
 from sqlalchemy.orm import Session
 from app.models.review import Review
 
@@ -27,12 +26,12 @@ class ReviewRepository:
         review = self.db.query(Review).filter_by(id=review_id).first()
         return review
 
-    def update(self, review: Review, review_update: ReviewUpdate) -> Review:
-        if review_update.content is not None:
-            review.content = review_update.content
-        if review_update.rating is not None:
-            review.rating = review_update.rating
-        if review_update.rating or review_update.content:
+    def update(self, review: Review, rating: int | None, content: str | None) -> Review:
+        if content is not None:
+            review.content = content
+        if rating is not None:
+            review.rating = rating
+        if rating or content:
             review.updated_at = datetime.now(timezone.utc)
 
         self.db.commit()

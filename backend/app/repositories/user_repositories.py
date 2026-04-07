@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 from app.models.user import User
-from app.schemas.user_schemas import UserUpdate
 
 
 class UserRepository:
@@ -22,13 +21,19 @@ class UserRepository:
     def get_user_by_id(self, user_id: int) -> User | None:
         return self.db.query(User).filter_by(id=user_id).first()
 
-    def update_user(self, db_user: User, user: UserUpdate) -> User:
-        if user.username is not None:
-            db_user.username = user.username
-        if user.bio is not None:
-            db_user.bio = user.bio
-        if user.avatar_url is not None:
-            db_user.avatar_url = user.avatar_url
+    def update_user(
+        self,
+        db_user: User,
+        username: str | None,
+        bio: str | None,
+        avatar_url: str | None,
+    ) -> User:
+        if username is not None:
+            db_user.username = username
+        if bio is not None:
+            db_user.bio = bio
+        if avatar_url is not None:
+            db_user.avatar_url = avatar_url
 
         self.db.commit()
         self.db.refresh(db_user)

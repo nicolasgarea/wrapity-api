@@ -7,30 +7,29 @@ from app.core.exceptions import (
 )
 from app.models.favorite import Favorite
 from app.repositories.favorite_repositories import FavoriteRepository
-from app.schemas.favorite_schemas import FavoriteCreate, FavoriteUpdate
 
 
 class FavoriteService:
     def __init__(self, favorite_repository: FavoriteRepository):
         self.favorite_repository = favorite_repository
 
-    def add_favorite(self, favorite_create: FavoriteCreate, user_id: int) -> Favorite:
-        if favorite_create.position < 1 or favorite_create.position > 4:
+    def add_favorite(self, album_id: str, position: int, user_id: int) -> Favorite:
+        if position < 1 or position > 4:
             raise InvalidFavoritePositionException()
 
         user_favorites = self.favorite_repository.get_by_user_id(user_id)
 
         for f in user_favorites:
-            if favorite_create.album_id == f.album_id:
+            if album_id == f.album_id:
                 raise AlbumAlreadyInFavoritesException()
 
-            if favorite_create.position == f.position:
+            if position == f.position:
                 raise FavoriteSlotAlreadyOccupedException()
 
         favorite = Favorite(
             user_id=user_id,
-            album_id=favorite_create.album_id,
-            position=favorite_create.position,
+            album_id=album_id,
+            position=position,
         )
         self.favorite_repository.create(favorite)
         return favorite
@@ -40,7 +39,7 @@ class FavoriteService:
         return favorites
 
     def update_favorite(
-        self, user_id: int, favorite_id: int, favorite_update: FavoriteUpdate
+        self, user_id: int, favorite_id: int, position: int
     ) -> Favorite:
         favorite = self.favorite_repository.get_by_id(favorite_id)
         if favorite is None:
@@ -50,13 +49,11 @@ class FavoriteService:
 
         user_favorites = self.favorite_repository.get_by_user_id(user_id)
         for f in user_favorites:
-            if f.position == favorite_update.position:
-                swap_update = FavoriteUpdate(position=favorite.position)
-                self.favorite_repository.update(f, swap_update)
+            if f.position == position:
+                self.favorite_repository.update(f, favorite.position)
                 break
 
-        updated_favorite = self.favorite_repository.update(favorite, favorite_update)
-        return updated_favorite
+        return self.favorite_repository.update(favorite, position)
 
     def delete_favorite(self, favorite_id: int, user_id: int):
         favorite = self.favorite_repository.get_by_id(favorite_id)
