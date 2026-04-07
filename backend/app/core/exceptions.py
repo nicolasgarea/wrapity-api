@@ -44,3 +44,7 @@ class FavoriteSlotAlreadyOccupedException(Exception):
 
 class AlbumAlreadyInFavoritesException(Exception):
     pass
+
+
+class UnauthorizedAdminAccessException(Exception):
+    pass
