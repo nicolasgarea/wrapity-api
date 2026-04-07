@@ -7,6 +7,7 @@ from app.core.exceptions import (
     FavoriteSlotAlreadyOccupedException,
     InvalidFavoritePositionException,
     ReviewNotFoundException,
+    UnauthorizedAdminAccessException,
     UnauthorizedFavoriteAccessException,
     UnauthorizedReviewAccessException,
     UserNotFoundException,
@@ -75,3 +76,11 @@ def register_exception_handlers(app):
         request: Request, exc: FavoriteSlotAlreadyOccupedException
     ):
         return JSONResponse(status_code=400, content={"detail": str(exc)})
+
+    @app.exception_handler(UnauthorizedAdminAccessException)
+    def unauthorized_admin_access_handler(
+        request: Request, exc: UnauthorizedAdminAccessException
+    ):
+        return JSONResponse(
+            status_code=403, content={"detail": "Admin access required"}
+        )

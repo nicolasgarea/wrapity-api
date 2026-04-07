@@ -2,7 +2,7 @@ from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
-from app.core.exceptions import InvalidTokenException
+from app.core.exceptions import InvalidTokenException, UnauthorizedAdminAccessException
 from app.core.security import decode_access_token
 from app.db.database import get_db
 from app.models.user import User
@@ -28,3 +28,9 @@ def get_current_user(
     if user is None:
         raise InvalidTokenException("Invalid token")
     return user
+
+
+def require_admin(current_user: User = Depends(get_current_user)) -> User:
+    if current_user.role != "admin":
+        raise UnauthorizedAdminAccessException()
+    return current_user
