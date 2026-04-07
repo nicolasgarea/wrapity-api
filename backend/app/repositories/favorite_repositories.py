@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 
 from app.models.favorite import Favorite
-from app.schemas.favorite_schemas import FavoriteUpdate
 
 
 class FavoriteRepository:
@@ -22,9 +21,8 @@ class FavoriteRepository:
         favorite = self.db.query(Favorite).filter_by(id=favorite_id).first()
         return favorite
 
-    def update(self, favorite: Favorite, favorite_update: FavoriteUpdate) -> Favorite:
-        if favorite_update.position is not None:
-            favorite.position = favorite_update.position
+    def update(self, favorite: Favorite, position: int) -> Favorite:
+        favorite.position = position
         self.db.commit()
         self.db.refresh(favorite)
         return favorite

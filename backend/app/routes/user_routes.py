@@ -27,7 +27,9 @@ def update_me(
     current_user: User = Depends(get_current_user),
     user_service: UserService = Depends(get_user_service),
 ) -> UserResponse:
-    updated_user = user_service.update_user(current_user, user_update)
+    updated_user = user_service.update_user(
+        current_user, user_update.username, user_update.bio, user_update.avatar_url
+    )
     return updated_user
 
 

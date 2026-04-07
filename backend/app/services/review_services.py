@@ -4,19 +4,18 @@ from app.core.exceptions import (
 )
 from app.models.review import Review
 from app.repositories.review_repositories import ReviewRepository
-from app.schemas.review_schemas import ReviewCreate, ReviewUpdate
 
 
 class ReviewService:
     def __init__(self, review_repository: ReviewRepository):
         self.review_repository = review_repository
 
-    def create(self, review_schema: ReviewCreate, user_id: int) -> Review:
+    def create(self, album_id: str, rating: int, content: str, user_id: int) -> Review:
         review = Review(
             user_id=user_id,
-            album_id=review_schema.album_id,
-            rating=review_schema.rating,
-            content=review_schema.content,
+            album_id=album_id,
+            rating=rating,
+            content=content,
         )
         self.review_repository.create(review)
         return review
@@ -35,16 +34,17 @@ class ReviewService:
             raise ReviewNotFoundException()
         return review
 
-    def update(self, user_id: int, review_id: int, review_update_schema: ReviewUpdate):
+    def update(
+        self, user_id: int, review_id: int, rating: int | None, content: str | None
+    ) -> Review:
         review = self.review_repository.get_by_id(review_id)
         if not review:
             raise ReviewNotFoundException()
         if review.user_id != user_id:
             raise UnauthorizedReviewAccessException()
-        review_updated = self.review_repository.update(
-            review=review, review_update=review_update_schema
+        return self.review_repository.update(
+            review=review, rating=rating, content=content
         )
-        return review_updated
 
     def delete(self, user_id: int, review_id: int):
         review = self.review_repository.get_by_id(review_id)

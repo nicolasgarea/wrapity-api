@@ -27,7 +27,9 @@ def add_favorite(
     current_user: User = Depends(get_current_user),
     favorite_service: FavoriteService = Depends(get_favorite_service),
 ) -> FavoriteResponse:
-    favorite = favorite_service.add_favorite(favorite_schema, current_user.id)
+    favorite = favorite_service.add_favorite(
+        favorite_schema.album_id, favorite_schema.position, current_user.id
+    )
     return favorite
 
 
@@ -46,7 +48,7 @@ def update_favorite(
     favorite_service: FavoriteService = Depends(get_favorite_service),
 ) -> FavoriteResponse:
     favorite = favorite_service.update_favorite(
-        current_user.id, favorite_id, favorite_schema
+        current_user.id, favorite_id, favorite_schema.position
     )
     return favorite
 
