@@ -2,9 +2,12 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 from app.core.exceptions import (
     AlbumAlreadyInFavoritesException,
+    AlreadyFollowingException,
+    CannotFollowYourselfException,
     EmailAlreadyExistsException,
     FavoriteNotFoundException,
     FavoriteSlotAlreadyOccupedException,
+    FollowNotFoundException,
     InvalidFavoritePositionException,
     ReviewNotFoundException,
     UnauthorizedAdminAccessException,
@@ -83,4 +86,24 @@ def register_exception_handlers(app):
     ):
         return JSONResponse(
             status_code=403, content={"detail": "Admin access required"}
+        )
+
+    @app.exception_handler(AlreadyFollowingException)
+    def already_following_handler(request: Request, exc: AlreadyFollowingException):
+        return JSONResponse(
+            status_code=409, content={"detail": "Already following this user"}
+        )
+
+    @app.exception_handler(FollowNotFoundException)
+    def follow_not_found_handler(request: Request, exc: FollowNotFoundException):
+        return JSONResponse(
+            status_code=404, content={"detail": "Follow relationship not found"}
+        )
+
+    @app.exception_handler(CannotFollowYourselfException)
+    def cannot_follow_yourself_handler(
+        request: Request, exc: CannotFollowYourselfException
+    ):
+        return JSONResponse(
+            status_code=400, content={"detail": "Cannot follow yourself"}
         )

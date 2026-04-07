@@ -48,3 +48,15 @@ class AlbumAlreadyInFavoritesException(Exception):
 
 class UnauthorizedAdminAccessException(Exception):
     pass
+
+
+class AlreadyFollowingException(Exception):
+    pass
+
+
+class FollowNotFoundException(Exception):
+    pass
+
+
+class CannotFollowYourselfException(Exception):
+    pass
