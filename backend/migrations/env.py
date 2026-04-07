@@ -27,6 +27,7 @@ if config.config_file_name is not None:
 from app.models.user import User
 from app.models.review import Review
 from app.models.favorite import Favorite
+from app.models.follower import Follower
 from app.db.database import Base
 
 target_metadata = Base.metadata
