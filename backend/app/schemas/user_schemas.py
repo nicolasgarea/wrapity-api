@@ -23,6 +23,6 @@ class UserResponse(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    username: str | None = Field(None, min_length=3, max_length=20)
-    bio: str | None = Field(None, max_length=500)
+    username: str | None = Field(None, min_length=3, max_length=50)
+    bio: str | None = Field(None, max_length=300)
     avatar_url: str | None = None

@@ -17,7 +17,12 @@ def get_review_service(db: Session = Depends(get_db)) -> ReviewService:
     return ReviewService(repo)
 
 
-@router.post("", status_code=status.HTTP_201_CREATED, response_model=ReviewResponse)
+@router.post(
+    "",
+    status_code=status.HTTP_201_CREATED,
+    response_model=ReviewResponse,
+    responses={401: {"description": "Not authenticated"}},
+)
 def create(
     review_schema: ReviewCreate,
     current_user: User = Depends(get_current_user),
@@ -33,7 +38,11 @@ def create(
     return review
 
 
-@router.get("/me", response_model=list[ReviewResponse])
+@router.get(
+    "/me",
+    response_model=list[ReviewResponse],
+    responses={401: {"description": "Not authenticated"}},
+)
 def get_my_reviews(
     current_user: User = Depends(get_current_user),
     review_service: ReviewService = Depends(get_review_service),
