@@ -1,5 +1,6 @@
 from fastapi import Request
 from fastapi.responses import JSONResponse
+from sqlalchemy.exc import SQLAlchemyError
 from app.core.exceptions import (
     AlbumAlreadyInFavoritesException,
     AlreadyFollowingException,
@@ -106,4 +107,13 @@ def register_exception_handlers(app):
     ):
         return JSONResponse(
             status_code=400, content={"detail": "Cannot follow yourself"}
+        )
+
+    @app.exception_handler(SQLAlchemyError)
+    def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
+        return JSONResponse(
+            status_code=400,
+            content={
+                "detail": "Database operation failed. Check your input format/length."
+            },
         )

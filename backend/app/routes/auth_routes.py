@@ -16,7 +16,12 @@ def get_auth_service(db: Session = Depends(get_db)) -> Auth:
     return Auth(repo)
 
 
-@router.post("/register", status_code=status.HTTP_201_CREATED, response_model=Token)
+@router.post(
+    "/register",
+    status_code=status.HTTP_201_CREATED,
+    response_model=Token,
+    responses={409: {"description": "Email already exists"}},
+)
 def register(
     user_data: UserRegister, auth_service: Auth = Depends(get_auth_service)
 ) -> Token:

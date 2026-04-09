@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ReviewCreate(BaseModel):
-    album_id: str
+    album_id: str = Field(..., min_length=1, max_length=100)
     rating: int
     content: str
 

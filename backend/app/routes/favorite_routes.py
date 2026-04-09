@@ -21,7 +21,12 @@ def get_favorite_service(db: Session = Depends(get_db)) -> FavoriteService:
     return FavoriteService(repo)
 
 
-@router.post("", status_code=status.HTTP_201_CREATED, response_model=FavoriteResponse)
+@router.post(
+    "",
+    status_code=status.HTTP_201_CREATED,
+    response_model=FavoriteResponse,
+    responses={401: {"description": "Not authenticated"}},
+)
 def add_favorite(
     favorite_schema: FavoriteCreate,
     current_user: User = Depends(get_current_user),

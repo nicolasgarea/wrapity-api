@@ -5,6 +5,7 @@ from app.core.dependencies import get_current_user
 from app.db.database import get_db
 from app.models.user import User
 from app.repositories.follower_repositories import FollowerRepository
+from app.repositories.user_repositories import UserRepository
 from app.schemas.follower_schemas import FollowerResponse
 from app.services.follower_services import FollowerService
 
@@ -13,8 +14,9 @@ router = APIRouter(prefix="/users", tags=["followers"])
 
 
 def get_follower_service(db: Session = Depends(get_db)) -> FollowerService:
-    repo = FollowerRepository(db)
-    return FollowerService(repo)
+    follower_repo = FollowerRepository(db)
+    user_repo = UserRepository(db)
+    return FollowerService(follower_repository=follower_repo, user_repository=user_repo)
 
 
 @router.post(

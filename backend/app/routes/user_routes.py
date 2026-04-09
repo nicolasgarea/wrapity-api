@@ -16,12 +16,20 @@ def get_user_service(db: Session = Depends(get_db)) -> UserService:
     return UserService(repo)
 
 
-@router.get("/me", response_model=UserResponse)
+@router.get(
+    "/me",
+    response_model=UserResponse,
+    responses={401: {"description": "Not authenticated"}},
+)
 def get_me(current_user: User = Depends(get_current_user)) -> UserResponse:
     return current_user
 
 
-@router.patch("/me", response_model=UserResponse)
+@router.patch(
+    "/me",
+    response_model=UserResponse,
+    responses={401: {"description": "Not authenticated"}},
+)
 def update_me(
     user_update: UserUpdate,
     current_user: User = Depends(get_current_user),
@@ -33,7 +41,11 @@ def update_me(
     return updated_user
 
 
-@router.get("/{user_id}", response_model=UserResponse)
+@router.get(
+    "/{user_id}",
+    response_model=UserResponse,
+    responses={404: {"description": "Not found"}},
+)
 def get_user_by_id(
     user_id: int, user_service: UserService = Depends(get_user_service)
 ) -> UserResponse:
