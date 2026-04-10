@@ -27,4 +27,8 @@ db_down:
 db_reload: db_down db_up
 
 proper-test:
-	cd backend && venv/bin/schemathesis run http://localhost:8000/openapi.json --checks not_a_server_error -H "Authorization: Bearer $(SCHEMATHESIS_TOKEN)" --max-examples 5
+	cd backend && venv/bin/schemathesis run http://localhost:8000/openapi.json \
+	  --checks not_a_server_error \
+	  -H "Authorization: Bearer $(SCHEMATHESIS_TOKEN)" \
+	  --max-examples 5 \
+	  --rate-limit 30/s

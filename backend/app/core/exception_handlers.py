@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 from app.core.exceptions import (
     AlbumAlreadyInFavoritesException,
+    AlbumNotFoundException,
     AlreadyFollowingException,
     CannotFollowYourselfException,
     EmailAlreadyExistsException,
@@ -117,3 +118,7 @@ def register_exception_handlers(app):
                 "detail": "Database operation failed. Check your input format/length."
             },
         )
+
+    @app.exception_handler(AlbumNotFoundException)
+    def album_not_found_handler(request: Request, exc: AlbumNotFoundException):
+        return JSONResponse(status_code=404, content={"detail": str(exc)})

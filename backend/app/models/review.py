@@ -1,7 +1,6 @@
 from sqlalchemy import (
     Column,
     Integer,
-    String,
     Text,
     DateTime,
     ForeignKey,
@@ -17,7 +16,7 @@ class Review(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    album_id = Column(String(100), nullable=False)
+    album_id = Column(Integer, nullable=False)
     rating = Column(Integer, nullable=False)
     content = Column(Text, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
