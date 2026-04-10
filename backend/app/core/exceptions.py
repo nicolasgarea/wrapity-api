@@ -60,3 +60,7 @@ class FollowNotFoundException(Exception):
 
 class CannotFollowYourselfException(Exception):
     pass
+
+
+class AlbumNotFoundException(Exception):
+    pass
