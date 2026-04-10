@@ -32,3 +32,13 @@ proper-test:
 	  -H "Authorization: Bearer $(SCHEMATHESIS_TOKEN)" \
 	  --max-examples 5 \
 	  --rate-limit 30/s
+
+seed:
+	venv/bin/python seed.py
+
+fresh:
+	docker compose down -v
+	docker compose up -d
+	sleep 15
+	venv/bin/alembic upgrade head
+	$(MAKE) seed
