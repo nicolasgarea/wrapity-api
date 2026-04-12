@@ -64,3 +64,7 @@ class CannotFollowYourselfException(Exception):
 
 class AlbumNotFoundException(Exception):
     pass
+
+
+class CloudinaryUploadException(Exception):
+    pass

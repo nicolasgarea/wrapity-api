@@ -6,6 +6,7 @@ from app.core.exceptions import (
     AlbumNotFoundException,
     AlreadyFollowingException,
     CannotFollowYourselfException,
+    CloudinaryUploadException,
     EmailAlreadyExistsException,
     FavoriteNotFoundException,
     FavoriteSlotAlreadyOccupedException,
@@ -122,3 +123,9 @@ def register_exception_handlers(app):
     @app.exception_handler(AlbumNotFoundException)
     def album_not_found_handler(request: Request, exc: AlbumNotFoundException):
         return JSONResponse(status_code=404, content={"detail": str(exc)})
+
+    @app.exception_handler(CloudinaryUploadException)
+    def cloudinary_upload_handler(request: Request, exc: CloudinaryUploadException):
+        return JSONResponse(
+            status_code=500, content={"detail": "Failed to upload image"}
+        )
