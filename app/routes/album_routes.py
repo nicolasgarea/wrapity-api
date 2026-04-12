@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 from app.clients.albums_client import AlbumsClient
 from app.services.album_services import AlbumService
 from app.schemas.album_schemas import Album
@@ -29,7 +29,4 @@ async def search(
 
 @router.get("/{album_id}", response_model=Album)
 async def get_by_id(album_id: int, service: AlbumService = Depends(get_album_service)):
-    try:
-        return await service.get_details(album_id)
-    except RuntimeError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+    return await service.get_details(album_id)

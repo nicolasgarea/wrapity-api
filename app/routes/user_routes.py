@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile, File
 from sqlalchemy.orm import Session
+from app.clients.cloudinary_client import CloudinaryClient
 from app.core.dependencies import get_current_user
 from app.db.database import get_db
 from app.models.user import User
@@ -13,7 +14,8 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 def get_user_service(db: Session = Depends(get_db)) -> UserService:
     repo = UserRepository(db)
-    return UserService(repo)
+    client = CloudinaryClient()
+    return UserService(repo, client)
 
 
 @router.get(
@@ -39,6 +41,23 @@ def update_me(
         current_user, user_update.username, user_update.bio, user_update.avatar_url
     )
     return updated_user
+
+
+@router.post(
+    "/me/avatar",
+    response_model=UserResponse,
+    responses={
+        401: {"description": "Not authenticated"},
+        500: {"description": "Upload failed"},
+    },
+)
+async def upload_avatar(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+    user_service: UserService = Depends(get_user_service),
+) -> UserResponse:
+    content = await file.read()
+    return user_service.upload_avatar(current_user, content)
 
 
 @router.get(

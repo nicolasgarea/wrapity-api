@@ -20,7 +20,7 @@ class AlbumsClient:
         try:
             response = await self.client.get("/search/album", params={"q": q})
             response.raise_for_status()
-            response.json()
+            return response.json()
         except httpx.HTTPStatusError as e:
             raise RuntimeError(
                 f"Error fetching albums: {e.response.status_code}"

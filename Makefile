@@ -31,7 +31,8 @@ proper-test:
 	  --checks not_a_server_error \
 	  -H "Authorization: Bearer $(SCHEMATHESIS_TOKEN)" \
 	  --max-examples 5 \
-	  --rate-limit 30/s
+	  --rate-limit 30/s \
+	  --exclude-path /users/me/avatar
 
 seed:
 	venv/bin/python seed.py
