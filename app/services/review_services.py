@@ -1,14 +1,23 @@
+import asyncio
+
+from app.clients.albums_client import AlbumsClient
 from app.core.exceptions import (
     ReviewNotFoundException,
     UnauthorizedReviewAccessException,
 )
 from app.models.review import Review
 from app.repositories.review_repositories import ReviewRepository
+from app.schemas.album_schemas import Album
+from app.schemas.review_schemas import ReviewFeedItemResponse
+from app.schemas.user_schemas import UserPublicResponse
 
 
 class ReviewService:
-    def __init__(self, review_repository: ReviewRepository):
+    def __init__(
+        self, review_repository: ReviewRepository, albums_client: AlbumsClient
+    ):
         self.review_repository = review_repository
+        self.albums_client = albums_client
 
     def create(self, album_id: str, rating: int, content: str, user_id: int) -> Review:
         review = Review(
@@ -46,7 +55,35 @@ class ReviewService:
             review=review, rating=rating, content=content
         )
 
-    def delete(self, user_id: int, review_id: int):
+    async def get_following_feed(
+        self, user_id: int, limit: int, offset: int = 0
+    ) -> list[ReviewFeedItemResponse]:
+        reviews = self.review_repository.get_following_feed(
+            user_id=user_id, limit=limit, offset=offset
+        )
+        if not reviews:
+            return []
+
+        unique_album_ids = {r.album_id for r in reviews}
+        albums_raw = await asyncio.gather(
+            *[self.albums_client.get_album_by_id(aid) for aid in unique_album_ids]
+        )
+        albums_by_id = {raw["id"]: Album(**raw) for raw in albums_raw}
+
+        return [
+            ReviewFeedItemResponse(
+                id=r.id,
+                rating=r.rating,
+                content=r.content,
+                created_at=r.created_at,
+                updated_at=r.updated_at,
+                album=albums_by_id[r.album_id],
+                author=UserPublicResponse.model_validate(r.user),
+            )
+            for r in reviews
+        ]
+
+    def delete(self, user_id: int, review_id: int) -> None:
         review = self.review_repository.get_by_id(review_id)
         if not review:
             raise ReviewNotFoundException()

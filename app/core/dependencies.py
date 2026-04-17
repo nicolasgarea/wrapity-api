@@ -1,7 +1,8 @@
-from fastapi import Depends
+from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
+from app.clients.albums_client import AlbumsClient
 from app.core.exceptions import InvalidTokenException, UnauthorizedAdminAccessException
 from app.core.security import decode_access_token
 from app.db.database import get_db
@@ -34,3 +35,7 @@ def require_admin(current_user: User = Depends(get_current_user)) -> User:
     if current_user.role != "admin":
         raise UnauthorizedAdminAccessException()
     return current_user
+
+
+def get_albums_client(request: Request) -> AlbumsClient:
+    return request.app.state.albums_client

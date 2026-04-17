@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
+from app.models.follower import Follower
 from app.models.review import Review
 
 
@@ -37,6 +38,20 @@ class ReviewRepository:
         self.db.commit()
         self.db.refresh(review)
         return review
+
+    def get_following_feed(
+        self, user_id: int, limit: int, offset: int = 0
+    ) -> list[Review]:
+        return (
+            self.db.query(Review)
+            .options(joinedload(Review.user))
+            .join(Follower, Follower.followed_id == Review.user_id)
+            .filter(Follower.follower_id == user_id)
+            .order_by(Review.created_at.desc())
+            .limit(limit)
+            .offset(offset)
+            .all()
+        )
 
     def delete(self, review: Review) -> None:
         self.db.delete(review)

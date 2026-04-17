@@ -26,3 +26,10 @@ class UserUpdate(BaseModel):
     username: str | None = Field(None, min_length=3, max_length=50)
     bio: str | None = Field(None, max_length=300)
     avatar_url: str | None = None
+
+
+class UserPublicResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    username: str
+    avatar_url: str | None = None
