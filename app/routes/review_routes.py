@@ -1,20 +1,46 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 
-from app.core.dependencies import get_current_user
+from app.clients.albums_client import AlbumsClient
+from app.core.dependencies import get_current_user, get_albums_client
 from app.db.database import get_db
 from app.models.user import User
 from app.repositories.review_repositories import ReviewRepository
-from app.schemas.review_schemas import ReviewCreate, ReviewResponse, ReviewUpdate
+from app.schemas.review_schemas import (
+    ReviewCreate,
+    ReviewFeedResponse,
+    ReviewResponse,
+    ReviewUpdate,
+)
 from app.services.review_services import ReviewService
 
 
 router = APIRouter(prefix="/reviews", tags=["review"])
 
 
-def get_review_service(db: Session = Depends(get_db)) -> ReviewService:
+def get_review_service(
+    db: Session = Depends(get_db),
+    albums_client: AlbumsClient = Depends(get_albums_client),
+) -> ReviewService:
     repo = ReviewRepository(db)
-    return ReviewService(repo)
+    return ReviewService(repo, albums_client)
+
+
+@router.get(
+    "/following",
+    response_model=ReviewFeedResponse,
+    responses={401: {"description": "Not authenticated"}},
+)
+async def get_following_feed(
+    limit: int = Query(10, ge=1, le=50),
+    offset: int = Query(0, ge=0),
+    current_user: User = Depends(get_current_user),
+    review_service: ReviewService = Depends(get_review_service),
+) -> ReviewFeedResponse:
+    items = await review_service.get_following_feed(
+        user_id=current_user.id, limit=limit, offset=offset
+    )
+    return ReviewFeedResponse(items=items)
 
 
 @router.post(
