@@ -15,12 +15,12 @@ class ReviewCreate(BaseModel):
 class ReviewResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
-    user_id: int
     album_id: int
     rating: int
     content: str | None = None
     created_at: datetime
     updated_at: datetime
+    user: UserPublicResponse
 
 
 class ReviewUpdate(BaseModel):
