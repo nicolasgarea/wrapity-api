@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends, Query
 from app.clients.albums_client import AlbumsClient
+from app.core.dependencies import get_favorite_repository
+from app.repositories.favorite_repositories import FavoriteRepository
 from app.services.album_services import AlbumService
-from app.schemas.album_schemas import Album
+from app.schemas.album_schemas import Album, AlbumDetail
 
 router = APIRouter(prefix="/albums", tags=["albums"])
 
@@ -30,3 +32,14 @@ async def search(
 @router.get("/{album_id}", response_model=Album)
 async def get_by_id(album_id: int, service: AlbumService = Depends(get_album_service)):
     return await service.get_details(album_id)
+
+
+@router.get("/{album_id}", response_model=AlbumDetail)
+async def get_by_id(
+    album_id: int,
+    service: AlbumService = Depends(get_album_service),
+    favorite_repo: FavoriteRepository = Depends(get_favorite_repository),
+):
+    album = await service.get_details(album_id)
+    favorite_count = favorite_repo.count_by_album_id(album_id)
+    return AlbumDetail(**album.model_dump(), favorite_count=favorite_count)

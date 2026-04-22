@@ -21,6 +21,9 @@ class FavoriteRepository:
         favorite = self.db.query(Favorite).filter_by(id=favorite_id).first()
         return favorite
 
+    def count_by_album_id(self, album_id: int) -> int:
+        return self.db.query(Favorite).filter_by(album_id=album_id).count()
+
     def update(self, favorite: Favorite, position: int) -> Favorite:
         favorite.position = position
         self.db.commit()

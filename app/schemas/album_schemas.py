@@ -23,6 +23,10 @@ class Album(BaseModel):
         return values
 
 
+class AlbumDetail(Album):
+    favorite_count: int = 0
+
+
 class AlbumWithReview(BaseModel):
     id: int
     album: Album
