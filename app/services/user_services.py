@@ -2,6 +2,7 @@ from app.clients.cloudinary_client import CloudinaryClient
 from app.core.exceptions import UserNotFoundException
 from app.models.user import User
 from app.repositories.user_repositories import UserRepository
+from app.schemas.user_schemas import UserProfileResponse
 
 
 class UserService:
@@ -34,3 +35,28 @@ class UserService:
         if not user:
             raise UserNotFoundException()
         return user
+
+    def get_profile_by_username(
+        self, username: str, viewer: User
+    ) -> UserProfileResponse:
+        user = self.user_repository.get_user_by_username(username)
+        if not user:
+            raise UserNotFoundException()
+
+        is_following = None
+        if viewer.id != user.id:
+            is_following = self.user_repository.is_following(
+                follower_id=viewer.id,
+                followed_id=user.id,
+            )
+
+        return UserProfileResponse(
+            id=user.id,
+            username=user.username,
+            bio=user.bio,
+            avatar_url=user.avatar_url,
+            reviews_count=self.user_repository.count_reviews(user.id),
+            followers_count=self.user_repository.count_followers(user.id),
+            following_count=self.user_repository.count_following(user.id),
+            is_following=is_following,
+        )

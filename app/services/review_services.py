@@ -33,9 +33,12 @@ class ReviewService:
         reviews = self.review_repository.get_by_user_id(user_id)
         return reviews
 
-    def get_by_album_id(self, album_id: str) -> list[Review]:
-        reviews = self.review_repository.get_by_album_id(album_id)
-        return reviews
+    def get_by_album_id(
+        self, album_id: str, limit: int = 20, offset: int = 0
+    ) -> list[Review]:
+        return self.review_repository.get_by_album_id(
+            album_id=album_id, limit=limit, offset=offset
+        )
 
     def get_by_id(self, review_id: int) -> Review:
         review = self.review_repository.get_by_id(review_id)
@@ -65,23 +68,36 @@ class ReviewService:
             return []
 
         unique_album_ids = {r.album_id for r in reviews}
-        albums_raw = await asyncio.gather(
-            *[self.albums_client.get_album_by_id(aid) for aid in unique_album_ids]
-        )
-        albums_by_id = {raw["id"]: Album(**raw) for raw in albums_raw}
 
-        return [
-            ReviewFeedItemResponse(
-                id=r.id,
-                rating=r.rating,
-                content=r.content,
-                created_at=r.created_at,
-                updated_at=r.updated_at,
-                album=albums_by_id[r.album_id],
-                author=UserPublicResponse.model_validate(r.user),
+        albums_raw = await asyncio.gather(
+            *[self.albums_client.get_album_by_id(aid) for aid in unique_album_ids],
+            return_exceptions=True,
+        )
+
+        albums_by_id: dict[int, Album] = {}
+        for raw in albums_raw:
+            if isinstance(raw, Exception) or not raw or "id" not in raw:
+                continue
+            albums_by_id[int(raw["id"])] = Album(**raw)
+
+        feed: list[ReviewFeedItemResponse] = []
+        for r in reviews:
+            album = albums_by_id.get(r.album_id)
+            if album is None:
+                continue
+            feed.append(
+                ReviewFeedItemResponse(
+                    id=r.id,
+                    rating=r.rating,
+                    content=r.content,
+                    created_at=r.created_at,
+                    updated_at=r.updated_at,
+                    album=album,
+                    author=UserPublicResponse.model_validate(r.user),
+                )
             )
-            for r in reviews
-        ]
+
+        return feed
 
     def delete(self, user_id: int, review_id: int) -> None:
         review = self.review_repository.get_by_id(review_id)

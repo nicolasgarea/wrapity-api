@@ -33,3 +33,15 @@ class UserPublicResponse(BaseModel):
     id: int
     username: str
     avatar_url: str | None = None
+
+
+class UserProfileResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    username: str
+    bio: str | None = None
+    avatar_url: str | None = None
+    reviews_count: int
+    followers_count: int
+    following_count: int
+    is_following: bool | None = None
