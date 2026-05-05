@@ -80,11 +80,12 @@ def get_my_reviews(
 
 @router.get("/album/{album_id}", response_model=list[ReviewResponse])
 def get_reviews_by_album(
-    album_id: str, review_service: ReviewService = Depends(get_review_service)
+    album_id: str,
+    limit: int = Query(20, ge=1, le=50),
+    offset: int = Query(0, ge=0),
+    review_service: ReviewService = Depends(get_review_service),
 ) -> list[ReviewResponse]:
-
-    reviews = review_service.get_by_album_id(album_id)
-    return reviews
+    return review_service.get_by_album_id(album_id=album_id, limit=limit, offset=offset)
 
 
 @router.get("/user/{user_id}", response_model=list[ReviewResponse])

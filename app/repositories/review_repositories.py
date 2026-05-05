@@ -19,9 +19,18 @@ class ReviewRepository:
         reviews = self.db.query(Review).filter_by(user_id=user_id).all()
         return reviews
 
-    def get_by_album_id(self, album_id: str) -> list[Review]:
-        reviews = self.db.query(Review).filter_by(album_id=album_id).all()
-        return reviews
+    def get_by_album_id(
+        self, album_id: str, limit: int = 20, offset: int = 0
+    ) -> list[Review]:
+        return (
+            self.db.query(Review)
+            .options(joinedload(Review.user))
+            .filter(Review.album_id == album_id)
+            .order_by(Review.created_at.desc())
+            .limit(limit)
+            .offset(offset)
+            .all()
+        )
 
     def get_by_id(self, review_id: int) -> Review:
         review = self.db.query(Review).filter_by(id=review_id).first()
