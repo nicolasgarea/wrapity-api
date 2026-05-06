@@ -29,16 +29,29 @@ class ReviewService:
         self.review_repository.create(review)
         return review
 
-    def get_by_user_id(self, user_id: int) -> list[Review]:
-        reviews = self.review_repository.get_by_user_id(user_id)
-        return reviews
-
-    def get_by_album_id(
+    async def get_by_album_id(
         self, album_id: str, limit: int = 20, offset: int = 0
-    ) -> list[Review]:
-        return self.review_repository.get_by_album_id(
+    ) -> list[ReviewFeedItemResponse]:
+        reviews = self.review_repository.get_by_album_id(
             album_id=album_id, limit=limit, offset=offset
         )
+        return await self._embed_albums(reviews)
+
+    async def get_by_user_id(
+        self, user_id: int, limit: int = 20, offset: int = 0
+    ) -> list[ReviewFeedItemResponse]:
+        reviews = self.review_repository.get_by_user_id(
+            user_id=user_id, limit=limit, offset=offset
+        )
+        return await self._embed_albums(reviews)
+
+    async def get_following_feed(
+        self, user_id: int, limit: int, offset: int = 0
+    ) -> list[ReviewFeedItemResponse]:
+        reviews = self.review_repository.get_following_feed(
+            user_id=user_id, limit=limit, offset=offset
+        )
+        return await self._embed_albums(reviews)
 
     def get_by_id(self, review_id: int) -> Review:
         review = self.review_repository.get_by_id(review_id)
@@ -58,12 +71,17 @@ class ReviewService:
             review=review, rating=rating, content=content
         )
 
-    async def get_following_feed(
-        self, user_id: int, limit: int, offset: int = 0
+    def delete(self, user_id: int, review_id: int) -> None:
+        review = self.review_repository.get_by_id(review_id)
+        if not review:
+            raise ReviewNotFoundException()
+        if review.user_id != user_id:
+            raise UnauthorizedReviewAccessException()
+        self.review_repository.delete(review)
+
+    async def _embed_albums(
+        self, reviews: list[Review]
     ) -> list[ReviewFeedItemResponse]:
-        reviews = self.review_repository.get_following_feed(
-            user_id=user_id, limit=limit, offset=offset
-        )
         if not reviews:
             return []
 
@@ -98,11 +116,3 @@ class ReviewService:
             )
 
         return feed
-
-    def delete(self, user_id: int, review_id: int) -> None:
-        review = self.review_repository.get_by_id(review_id)
-        if not review:
-            raise ReviewNotFoundException()
-        if review.user_id != user_id:
-            raise UnauthorizedReviewAccessException()
-        self.review_repository.delete(review)

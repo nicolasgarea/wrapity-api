@@ -8,6 +8,7 @@ from app.models.user import User
 from app.repositories.review_repositories import ReviewRepository
 from app.schemas.review_schemas import (
     ReviewCreate,
+    ReviewFeedItemResponse,
     ReviewFeedResponse,
     ReviewResponse,
     ReviewUpdate,
@@ -54,46 +55,48 @@ def create(
     current_user: User = Depends(get_current_user),
     review_service: ReviewService = Depends(get_review_service),
 ) -> ReviewResponse:
-
-    review = review_service.create(
+    return review_service.create(
         review_schema.album_id,
         review_schema.rating,
         review_schema.content,
         current_user.id,
     )
-    return review
 
 
 @router.get(
     "/me",
-    response_model=list[ReviewResponse],
+    response_model=list[ReviewFeedItemResponse],
     responses={401: {"description": "Not authenticated"}},
 )
-def get_my_reviews(
+async def get_my_reviews(
     current_user: User = Depends(get_current_user),
     review_service: ReviewService = Depends(get_review_service),
-) -> list[ReviewResponse]:
-
-    reviews = review_service.get_by_user_id(current_user.id)
-    return reviews
+) -> list[ReviewFeedItemResponse]:
+    return await review_service.get_by_user_id(current_user.id)
 
 
-@router.get("/album/{album_id}", response_model=list[ReviewResponse])
-def get_reviews_by_album(
+@router.get("/album/{album_id}", response_model=list[ReviewFeedItemResponse])
+async def get_reviews_by_album(
     album_id: str,
     limit: int = Query(20, ge=1, le=50),
     offset: int = Query(0, ge=0),
     review_service: ReviewService = Depends(get_review_service),
-) -> list[ReviewResponse]:
-    return review_service.get_by_album_id(album_id=album_id, limit=limit, offset=offset)
+) -> list[ReviewFeedItemResponse]:
+    return await review_service.get_by_album_id(
+        album_id=album_id, limit=limit, offset=offset
+    )
 
 
-@router.get("/user/{user_id}", response_model=list[ReviewResponse])
-def get_reviews_by_user(
-    user_id: int, review_service: ReviewService = Depends(get_review_service)
-) -> list[ReviewResponse]:
-    reviews = review_service.get_by_user_id(user_id)
-    return reviews
+@router.get("/user/{user_id}", response_model=list[ReviewFeedItemResponse])
+async def get_reviews_by_user(
+    user_id: int,
+    limit: int = Query(20, ge=1, le=50),
+    offset: int = Query(0, ge=0),
+    review_service: ReviewService = Depends(get_review_service),
+) -> list[ReviewFeedItemResponse]:
+    return await review_service.get_by_user_id(
+        user_id=user_id, limit=limit, offset=offset
+    )
 
 
 @router.patch("/{review_id}", response_model=ReviewResponse)
@@ -103,13 +106,12 @@ def update_review(
     current_user: User = Depends(get_current_user),
     review_service: ReviewService = Depends(get_review_service),
 ) -> ReviewResponse:
-    review = review_service.update(
+    return review_service.update(
         user_id=current_user.id,
         review_id=review_id,
         rating=review_schema.rating,
         content=review_schema.content,
     )
-    return review
 
 
 @router.delete("/{review_id}", status_code=status.HTTP_204_NO_CONTENT)
