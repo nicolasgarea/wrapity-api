@@ -1,11 +1,16 @@
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, Query, UploadFile, File
 from sqlalchemy.orm import Session
 from app.clients.cloudinary_client import CloudinaryClient
 from app.core.dependencies import get_current_user
 from app.db.database import get_db
 from app.models.user import User
 from app.repositories.user_repositories import UserRepository
-from app.schemas.user_schemas import UserResponse, UserUpdate, UserProfileResponse
+from app.schemas.user_schemas import (
+    UserPublicResponse,
+    UserResponse,
+    UserUpdate,
+    UserProfileResponse,
+)
 from app.services.user_services import UserService
 
 
@@ -57,6 +62,19 @@ async def upload_avatar(
 ) -> UserResponse:
     content = await file.read()
     return user_service.upload_avatar(current_user, content)
+
+
+@router.get(
+    "/search",
+    response_model=list[UserPublicResponse],
+    responses={401: {"description": "Not authenticated"}},
+)
+def search_users(
+    q: str = Query(..., min_length=1, max_length=50),
+    current_user: User = Depends(get_current_user),
+    user_service: UserService = Depends(get_user_service),
+) -> list[UserPublicResponse]:
+    return user_service.search_users(q)
 
 
 @router.get(

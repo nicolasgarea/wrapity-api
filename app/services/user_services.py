@@ -60,3 +60,9 @@ class UserService:
             following_count=self.user_repository.count_following(user.id),
             is_following=is_following,
         )
+
+    def search_users(self, query: str, limit: int = 20) -> list[User]:
+        query = query.strip()
+        if not query:
+            return []
+        return self.user_repository.search(query, limit)
