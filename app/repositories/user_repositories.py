@@ -60,3 +60,12 @@ class UserRepository:
             .first()
             is not None
         )
+
+    def search(self, query: str, limit: int = 20) -> list[User]:
+        return (
+            self.db.query(User)
+            .filter(User.username.ilike(f"%{query}%"))
+            .order_by(User.username)
+            .limit(limit)
+            .all()
+        )

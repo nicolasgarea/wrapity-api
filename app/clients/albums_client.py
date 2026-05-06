@@ -8,7 +8,7 @@ class AlbumsClient:
 
     async def get_album_trends(self):
         try:
-            response = await self.client.get("/chart/0/albums")
+            response = await self.client.get("/editorial/0/selection")
             response.raise_for_status()
             return response.json()
         except httpx.HTTPStatusError as e:
