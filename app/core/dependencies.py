@@ -7,7 +7,6 @@ from app.core.exceptions import InvalidTokenException, UnauthorizedAdminAccessEx
 from app.core.security import decode_access_token
 from app.db.database import get_db
 from app.models.user import User
-from app.repositories.favorite_repositories import FavoriteRepository
 from app.repositories.user_repositories import UserRepository
 
 
@@ -40,7 +39,3 @@ def require_admin(current_user: User = Depends(get_current_user)) -> User:
 
 def get_albums_client(request: Request) -> AlbumsClient:
     return request.app.state.albums_client
-
-
-def get_favorite_repository(db: Session = Depends(get_db)) -> FavoriteRepository:
-    return FavoriteRepository(db)

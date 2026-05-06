@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Query
 from app.clients.albums_client import AlbumsClient
-from app.core.dependencies import get_favorite_repository
+from app.routes.favorite_routes import get_favorite_repository
 from app.repositories.favorite_repositories import FavoriteRepository
 from app.services.album_services import AlbumService
 from app.schemas.album_schemas import Album, AlbumDetail
