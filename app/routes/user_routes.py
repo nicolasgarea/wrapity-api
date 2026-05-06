@@ -5,7 +5,7 @@ from app.core.dependencies import get_current_user
 from app.db.database import get_db
 from app.models.user import User
 from app.repositories.user_repositories import UserRepository
-from app.schemas.user_schemas import UserResponse, UserUpdate
+from app.schemas.user_schemas import UserResponse, UserUpdate, UserProfileResponse
 from app.services.user_services import UserService
 
 
@@ -37,10 +37,9 @@ def update_me(
     current_user: User = Depends(get_current_user),
     user_service: UserService = Depends(get_user_service),
 ) -> UserResponse:
-    updated_user = user_service.update_user(
+    return user_service.update_user(
         current_user, user_update.username, user_update.bio, user_update.avatar_url
     )
-    return updated_user
 
 
 @router.post(
@@ -61,6 +60,19 @@ async def upload_avatar(
 
 
 @router.get(
+    "/by-username/{username}",
+    response_model=UserProfileResponse,
+    responses={404: {"description": "Not found"}},
+)
+def get_user_by_username(
+    username: str,
+    user_service: UserService = Depends(get_user_service),
+    current_user: User | None = Depends(get_current_user),
+) -> UserProfileResponse:
+    return user_service.get_profile_by_username(username, viewer=current_user)
+
+
+@router.get(
     "/{user_id}",
     response_model=UserResponse,
     responses={404: {"description": "Not found"}},
@@ -68,5 +80,4 @@ async def upload_avatar(
 def get_user_by_id(
     user_id: int, user_service: UserService = Depends(get_user_service)
 ) -> UserResponse:
-    user = user_service.get_user_by_id(user_id)
-    return user
+    return user_service.get_user_by_id(user_id)

@@ -1,4 +1,6 @@
 from sqlalchemy.orm import Session
+from app.models.follower import Follower
+from app.models.review import Review
 from app.models.user import User
 
 
@@ -38,3 +40,23 @@ class UserRepository:
         self.db.commit()
         self.db.refresh(db_user)
         return db_user
+
+    def count_reviews(self, user_id: int) -> int:
+        return self.db.query(Review).filter_by(user_id=user_id).count()
+
+    def count_followers(self, user_id: int) -> int:
+        return self.db.query(Follower).filter_by(followed_id=user_id).count()
+
+    def count_following(self, user_id: int) -> int:
+        return self.db.query(Follower).filter_by(follower_id=user_id).count()
+
+    def is_following(self, follower_id: int, followed_id: int) -> bool:
+        return (
+            self.db.query(Follower)
+            .filter_by(
+                follower_id=follower_id,
+                followed_id=followed_id,
+            )
+            .first()
+            is not None
+        )
