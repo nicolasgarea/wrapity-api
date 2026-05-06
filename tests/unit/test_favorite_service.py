@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock
 
+from app.clients.albums_client import AlbumsClient
 from app.models.favorite import Favorite
 from app.repositories.favorite_repositories import FavoriteRepository
 from app.services.favorite_services import FavoriteService
@@ -16,8 +17,13 @@ def favorite_repository():
 
 
 @pytest.fixture
-def favorite_service(favorite_repository):
-    return FavoriteService(favorite_repository)
+def albums_client():
+    return MagicMock(spec=AlbumsClient)
+
+
+@pytest.fixture
+def favorite_service(favorite_repository, albums_client):
+    return FavoriteService(favorite_repository, albums_client)
 
 
 @pytest.fixture
