@@ -32,6 +32,7 @@ class UserPublicResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     username: str
+    bio: str | None = None
     avatar_url: str | None = None
 
 

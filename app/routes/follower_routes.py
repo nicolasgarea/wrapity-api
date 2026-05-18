@@ -7,6 +7,7 @@ from app.models.user import User
 from app.repositories.follower_repositories import FollowerRepository
 from app.repositories.user_repositories import UserRepository
 from app.schemas.follower_schemas import FollowerResponse
+from app.schemas.user_schemas import UserPublicResponse
 from app.services.follower_services import FollowerService
 
 
@@ -41,17 +42,17 @@ def unfollow(
     follower_service.unfollow(current_user.id, user_id)
 
 
-@router.get("/{user_id}/followers", response_model=list[FollowerResponse])
+@router.get("/{user_id}/followers", response_model=list[UserPublicResponse])
 def get_followers(
     user_id: int,
     follower_service: FollowerService = Depends(get_follower_service),
-) -> list[FollowerResponse]:
+) -> list[UserPublicResponse]:
     return follower_service.get_followers(user_id)
 
 
-@router.get("/{user_id}/following", response_model=list[FollowerResponse])
+@router.get("/{user_id}/following", response_model=list[UserPublicResponse])
 def get_following(
     user_id: int,
     follower_service: FollowerService = Depends(get_follower_service),
-) -> list[FollowerResponse]:
+) -> list[UserPublicResponse]:
     return follower_service.get_following(user_id)
