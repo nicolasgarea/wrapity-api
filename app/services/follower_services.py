@@ -5,6 +5,7 @@ from app.core.exceptions import (
     UserNotFoundException,
 )
 from app.models.follower import Follower
+from app.models.user import User
 from app.repositories.follower_repositories import FollowerRepository
 from app.repositories.user_repositories import UserRepository
 
@@ -40,8 +41,8 @@ class FollowerService:
             raise FollowNotFoundException()
         self.follower_repository.delete(follow)
 
-    def get_followers(self, user_id: int) -> list[Follower]:
+    def get_followers(self, user_id: int) -> list[User]:
         return self.follower_repository.get_followers(user_id)
 
-    def get_following(self, user_id: int) -> list[Follower]:
+    def get_following(self, user_id: int) -> list[User]:
         return self.follower_repository.get_following(user_id)

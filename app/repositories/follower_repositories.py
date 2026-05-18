@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.models.follower import Follower
+from app.models.user import User
 
 
 class FollowerRepository:
@@ -22,11 +23,21 @@ class FollowerRepository:
             .first()
         )
 
-    def get_followers(self, user_id: int) -> list[Follower]:
-        return self.db.query(Follower).filter_by(followed_id=user_id).all()
+    def get_followers(self, user_id: int) -> list[User]:
+        return (
+            self.db.query(User)
+            .join(Follower, Follower.follower_id == User.id)
+            .filter(Follower.followed_id == user_id)
+            .all()
+        )
 
-    def get_following(self, user_id: int) -> list[Follower]:
-        return self.db.query(Follower).filter_by(follower_id=user_id).all()
+    def get_following(self, user_id: int) -> list[User]:
+        return (
+            self.db.query(User)
+            .join(Follower, Follower.followed_id == User.id)
+            .filter(Follower.follower_id == user_id)
+            .all()
+        )
 
     def delete(self, follower: Follower) -> None:
         self.db.delete(follower)

@@ -225,6 +225,104 @@
                 ]
             }
         },
+        "/users/search": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Search Users",
+                "operationId": "search_users_users_search_get",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50,
+                            "title": "Q"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/UserPublicResponse"
+                                    },
+                                    "title": "Response Search Users Users Search Get"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/by-username/{username}": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get User By Username",
+                "operationId": "get_user_by_username_users_by_username__username__get",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Username"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserProfileResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/users/{user_id}": {
             "get": {
                 "tags": [
@@ -256,6 +354,130 @@
                     },
                     "404": {
                         "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/reviews/recent": {
+            "get": {
+                "tags": [
+                    "review"
+                ],
+                "summary": "Get Recent",
+                "operationId": "get_recent_reviews_recent_get",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 50,
+                            "minimum": 1,
+                            "default": 20,
+                            "title": "Limit"
+                        }
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "default": 0,
+                            "title": "Offset"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ReviewFeedItemResponse"
+                                    },
+                                    "title": "Response Get Recent Reviews Recent Get"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/reviews/following": {
+            "get": {
+                "tags": [
+                    "review"
+                ],
+                "summary": "Get Following Feed",
+                "operationId": "get_following_feed_reviews_following_get",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 50,
+                            "minimum": 1,
+                            "default": 10,
+                            "title": "Limit"
+                        }
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "default": 0,
+                            "title": "Offset"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReviewFeedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
                     },
                     "422": {
                         "description": "Validation Error",
@@ -333,7 +555,7 @@
                             "application/json": {
                                 "schema": {
                                     "items": {
-                                        "$ref": "#/components/schemas/ReviewResponse"
+                                        "$ref": "#/components/schemas/ReviewFeedItemResponse"
                                     },
                                     "type": "array",
                                     "title": "Response Get My Reviews Reviews Me Get"
@@ -368,6 +590,29 @@
                             "type": "string",
                             "title": "Album Id"
                         }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 50,
+                            "minimum": 1,
+                            "default": 20,
+                            "title": "Limit"
+                        }
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "default": 0,
+                            "title": "Offset"
+                        }
                     }
                 ],
                 "responses": {
@@ -378,7 +623,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/ReviewResponse"
+                                        "$ref": "#/components/schemas/ReviewFeedItemResponse"
                                     },
                                     "title": "Response Get Reviews By Album Reviews Album  Album Id  Get"
                                 }
@@ -414,6 +659,29 @@
                             "type": "integer",
                             "title": "User Id"
                         }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 50,
+                            "minimum": 1,
+                            "default": 20,
+                            "title": "Limit"
+                        }
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "default": 0,
+                            "title": "Offset"
+                        }
                     }
                 ],
                 "responses": {
@@ -424,7 +692,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/ReviewResponse"
+                                        "$ref": "#/components/schemas/ReviewFeedItemResponse"
                                     },
                                     "title": "Response Get Reviews By User Reviews User  User Id  Get"
                                 }
@@ -588,6 +856,59 @@
                 ]
             }
         },
+        "/favorites/me": {
+            "put": {
+                "tags": [
+                    "favorites"
+                ],
+                "summary": "Replace My Favorites",
+                "operationId": "replace_my_favorites_favorites_me_put",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FavoritesReplaceRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "items": {
+                                        "$ref": "#/components/schemas/FavoriteWithAlbumResponse"
+                                    },
+                                    "type": "array",
+                                    "title": "Response Replace My Favorites Favorites Me Put"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
         "/favorites/user/{user_id}": {
             "get": {
                 "tags": [
@@ -614,7 +935,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/FavoriteResponse"
+                                        "$ref": "#/components/schemas/FavoriteWithAlbumResponse"
                                     },
                                     "title": "Response Get Favorites By User Favorites User  User Id  Get"
                                 }
@@ -840,7 +1161,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/FollowerResponse"
+                                        "$ref": "#/components/schemas/UserPublicResponse"
                                     },
                                     "title": "Response Get Followers Users  User Id  Followers Get"
                                 }
@@ -886,7 +1207,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/FollowerResponse"
+                                        "$ref": "#/components/schemas/UserPublicResponse"
                                     },
                                     "title": "Response Get Following Users  User Id  Following Get"
                                 }
@@ -1002,7 +1323,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Album"
+                                    "$ref": "#/components/schemas/AlbumDetail"
                                 }
                             }
                         }
@@ -1050,7 +1371,14 @@
                         "title": "Title"
                     },
                     "cover": {
-                        "type": "string",
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Cover"
                     },
                     "artist": {
@@ -1061,10 +1389,47 @@
                 "required": [
                     "id",
                     "title",
-                    "cover",
                     "artist"
                 ],
                 "title": "Album"
+            },
+            "AlbumDetail": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "title": "Id"
+                    },
+                    "title": {
+                        "type": "string",
+                        "title": "Title"
+                    },
+                    "cover": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Cover"
+                    },
+                    "artist": {
+                        "$ref": "#/components/schemas/Artist"
+                    },
+                    "favorite_count": {
+                        "type": "integer",
+                        "title": "Favorite Count",
+                        "default": 0
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "title",
+                    "artist"
+                ],
+                "title": "AlbumDetail"
             },
             "Artist": {
                 "properties": {
@@ -1115,6 +1480,24 @@
                     "position"
                 ],
                 "title": "FavoriteCreate"
+            },
+            "FavoriteItemInput": {
+                "properties": {
+                    "album_id": {
+                        "type": "string",
+                        "title": "Album Id"
+                    },
+                    "position": {
+                        "type": "integer",
+                        "title": "Position"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "album_id",
+                    "position"
+                ],
+                "title": "FavoriteItemInput"
             },
             "FavoriteResponse": {
                 "properties": {
@@ -1167,6 +1550,60 @@
                 "type": "object",
                 "title": "FavoriteUpdate"
             },
+            "FavoriteWithAlbumResponse": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "title": "Id"
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "title": "User Id"
+                    },
+                    "album_id": {
+                        "type": "string",
+                        "title": "Album Id"
+                    },
+                    "position": {
+                        "type": "integer",
+                        "title": "Position"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Created At"
+                    },
+                    "album": {
+                        "$ref": "#/components/schemas/Album"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "user_id",
+                    "album_id",
+                    "position",
+                    "created_at",
+                    "album"
+                ],
+                "title": "FavoriteWithAlbumResponse"
+            },
+            "FavoritesReplaceRequest": {
+                "properties": {
+                    "favorites": {
+                        "items": {
+                            "$ref": "#/components/schemas/FavoriteItemInput"
+                        },
+                        "type": "array",
+                        "title": "Favorites"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "favorites"
+                ],
+                "title": "FavoritesReplaceRequest"
+            },
             "FollowerResponse": {
                 "properties": {
                     "follower_id": {
@@ -1207,13 +1644,13 @@
             "ReviewCreate": {
                 "properties": {
                     "album_id": {
-                        "type": "string",
-                        "maxLength": 100,
-                        "minLength": 1,
+                        "type": "integer",
                         "title": "Album Id"
                     },
                     "rating": {
                         "type": "integer",
+                        "maximum": 5.0,
+                        "minimum": 1.0,
                         "title": "Rating"
                     },
                     "content": {
@@ -1235,26 +1672,25 @@
                 ],
                 "title": "ReviewCreate"
             },
-            "ReviewResponse": {
+            "ReviewFeedItemResponse": {
                 "properties": {
                     "id": {
                         "type": "integer",
                         "title": "Id"
-                    },
-                    "user_id": {
-                        "type": "integer",
-                        "title": "User Id"
-                    },
-                    "album_id": {
-                        "type": "string",
-                        "title": "Album Id"
                     },
                     "rating": {
                         "type": "integer",
                         "title": "Rating"
                     },
                     "content": {
-                        "type": "string",
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Content"
                     },
                     "created_at": {
@@ -1266,17 +1702,88 @@
                         "type": "string",
                         "format": "date-time",
                         "title": "Updated At"
+                    },
+                    "album": {
+                        "$ref": "#/components/schemas/Album"
+                    },
+                    "author": {
+                        "$ref": "#/components/schemas/UserPublicResponse"
                     }
                 },
                 "type": "object",
                 "required": [
                     "id",
-                    "user_id",
+                    "rating",
+                    "created_at",
+                    "updated_at",
+                    "album",
+                    "author"
+                ],
+                "title": "ReviewFeedItemResponse"
+            },
+            "ReviewFeedResponse": {
+                "properties": {
+                    "items": {
+                        "items": {
+                            "$ref": "#/components/schemas/ReviewFeedItemResponse"
+                        },
+                        "type": "array",
+                        "title": "Items"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "items"
+                ],
+                "title": "ReviewFeedResponse"
+            },
+            "ReviewResponse": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "title": "Id"
+                    },
+                    "album_id": {
+                        "type": "integer",
+                        "title": "Album Id"
+                    },
+                    "rating": {
+                        "type": "integer",
+                        "title": "Rating"
+                    },
+                    "content": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Content"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Created At"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Updated At"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/UserPublicResponse"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
                     "album_id",
                     "rating",
-                    "content",
                     "created_at",
-                    "updated_at"
+                    "updated_at",
+                    "user"
                 ],
                 "title": "ReviewResponse"
             },
@@ -1285,7 +1792,9 @@
                     "rating": {
                         "anyOf": [
                             {
-                                "type": "integer"
+                                "type": "integer",
+                                "maximum": 5.0,
+                                "minimum": 1.0
                             },
                             {
                                 "type": "null"
@@ -1345,6 +1854,112 @@
                     "password"
                 ],
                 "title": "UserLogin"
+            },
+            "UserProfileResponse": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "title": "Id"
+                    },
+                    "username": {
+                        "type": "string",
+                        "title": "Username"
+                    },
+                    "bio": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Bio"
+                    },
+                    "avatar_url": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Avatar Url"
+                    },
+                    "reviews_count": {
+                        "type": "integer",
+                        "title": "Reviews Count"
+                    },
+                    "followers_count": {
+                        "type": "integer",
+                        "title": "Followers Count"
+                    },
+                    "following_count": {
+                        "type": "integer",
+                        "title": "Following Count"
+                    },
+                    "is_following": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Is Following"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "username",
+                    "reviews_count",
+                    "followers_count",
+                    "following_count"
+                ],
+                "title": "UserProfileResponse"
+            },
+            "UserPublicResponse": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "title": "Id"
+                    },
+                    "username": {
+                        "type": "string",
+                        "title": "Username"
+                    },
+                    "bio": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Bio"
+                    },
+                    "avatar_url": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Avatar Url"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "username"
+                ],
+                "title": "UserPublicResponse"
             },
             "UserRegister": {
                 "properties": {
