@@ -27,6 +27,15 @@ def get_review_service(
     return ReviewService(repo, albums_client)
 
 
+@router.get("/recent", response_model=list[ReviewFeedItemResponse])
+async def get_recent(
+    limit: int = Query(20, ge=1, le=50),
+    offset: int = Query(0, ge=0),
+    review_service: ReviewService = Depends(get_review_service),
+) -> list[ReviewFeedItemResponse]:
+    return await review_service.get_recent(limit=limit, offset=offset)
+
+
 @router.get(
     "/following",
     response_model=ReviewFeedResponse,

@@ -44,7 +44,7 @@ class UserService:
             raise UserNotFoundException()
 
         is_following = None
-        if viewer.id != user.id:
+        if viewer is not None and viewer.id != user.id:
             is_following = self.user_repository.is_following(
                 follower_id=viewer.id,
                 followed_id=user.id,
