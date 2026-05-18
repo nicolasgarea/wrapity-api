@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query, UploadFile, File
 from sqlalchemy.orm import Session
 from app.clients.cloudinary_client import CloudinaryClient
-from app.core.dependencies import get_current_user
+from app.core.dependencies import get_current_user, get_current_user_optional
 from app.db.database import get_db
 from app.models.user import User
 from app.repositories.user_repositories import UserRepository
@@ -67,11 +67,9 @@ async def upload_avatar(
 @router.get(
     "/search",
     response_model=list[UserPublicResponse],
-    responses={401: {"description": "Not authenticated"}},
 )
 def search_users(
     q: str = Query(..., min_length=1, max_length=50),
-    current_user: User = Depends(get_current_user),
     user_service: UserService = Depends(get_user_service),
 ) -> list[UserPublicResponse]:
     return user_service.search_users(q)
@@ -85,7 +83,7 @@ def search_users(
 def get_user_by_username(
     username: str,
     user_service: UserService = Depends(get_user_service),
-    current_user: User | None = Depends(get_current_user),
+    current_user: User | None = Depends(get_current_user_optional),
 ) -> UserProfileResponse:
     return user_service.get_profile_by_username(username, viewer=current_user)
 

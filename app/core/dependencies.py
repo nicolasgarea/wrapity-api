@@ -11,6 +11,23 @@ from app.repositories.user_repositories import UserRepository
 
 
 bearer_scheme = HTTPBearer()
+bearer_scheme_optional = HTTPBearer(auto_error=False)
+
+
+def get_current_user_optional(
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme_optional),
+    db: Session = Depends(get_db),
+) -> User | None:
+    if not credentials:
+        return None
+    try:
+        token_data = decode_access_token(credentials.credentials)
+        user_id = token_data.get("sub")
+        if not user_id:
+            return None
+        return UserRepository(db).get_user_by_id(int(user_id))
+    except Exception:
+        return None
 
 
 def get_current_user(

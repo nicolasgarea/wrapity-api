@@ -71,6 +71,16 @@ class ReviewRepository:
             .all()
         )
 
+    def get_recent(self, limit: int = 20, offset: int = 0) -> list[Review]:
+        return (
+            self.db.query(Review)
+            .options(joinedload(Review.user))
+            .order_by(Review.created_at.desc())
+            .limit(limit)
+            .offset(offset)
+            .all()
+        )
+
     def delete(self, review: Review) -> None:
         self.db.delete(review)
         self.db.commit()

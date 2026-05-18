@@ -45,6 +45,12 @@ class ReviewService:
         )
         return await self._embed_albums(reviews)
 
+    async def get_recent(
+        self, limit: int = 20, offset: int = 0
+    ) -> list[ReviewFeedItemResponse]:
+        reviews = self.review_repository.get_recent(limit=limit, offset=offset)
+        return await self._embed_albums(reviews)
+
     async def get_following_feed(
         self, user_id: int, limit: int, offset: int = 0
     ) -> list[ReviewFeedItemResponse]:
