@@ -20,6 +20,7 @@ class User(Base):
 
     reviews = relationship("Review", back_populates="user")
     favorites = relationship("Favorite", back_populates="user")
+    likes = relationship("Like", back_populates="user")
     followers = relationship(
         "Follower", foreign_keys="Follower.followed_id", back_populates="followed"
     )

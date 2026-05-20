@@ -2,8 +2,10 @@ import random
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from app.db.database import engine
+from app.models.activity import Activity
 from app.models.favorite import Favorite
 from app.models.follower import Follower
+from app.models.like import Like
 from app.models.review import Review
 from app.models.user import User
 
@@ -103,6 +105,8 @@ def make_review_text(rating: int) -> str:
 def seed():
     with Session(engine) as db:
         print("Cleaning existing data...")
+        db.query(Activity).delete()
+        db.query(Like).delete()
         db.query(Follower).delete()
         db.query(Favorite).delete()
         db.query(Review).delete()
@@ -130,7 +134,7 @@ def seed():
         print(f"  -> {len(users)} users created.")
 
         print("Seeding reviews...")
-        review_count = 0
+        reviews: list[Review] = []
         rating_pool = [5] * 5 + [4] * 6 + [3] * 4 + [2] * 2 + [1] * 1
 
         for user in users:
@@ -138,17 +142,38 @@ def seed():
             chosen_albums = random.sample(ALBUM_IDS, n_reviews)
             for album_id in chosen_albums:
                 rating = random.choice(rating_pool)
+                review = Review(
+                    user_id=user.id,
+                    album_id=album_id,
+                    rating=rating,
+                    content=make_review_text(rating),
+                )
+                db.add(review)
+                reviews.append(review)
+        db.flush()
+        review_count = len(reviews)
+        print(f"  -> {review_count} reviews created.")
+
+        for review in reviews:
+            db.add(
+                Activity(
+                    user_id=review.user_id, type="review", review_id=review.id
+                )
+            )
+
+        print("Seeding likes...")
+        like_count = 0
+        for user in users:
+            candidates = [r for r in reviews if r.user_id != user.id]
+            for review in random.sample(candidates, random.randint(3, 8)):
+                db.add(Like(user_id=user.id, review_id=review.id))
                 db.add(
-                    Review(
-                        user_id=user.id,
-                        album_id=album_id,
-                        rating=rating,
-                        content=make_review_text(rating),
+                    Activity(
+                        user_id=user.id, type="like", review_id=review.id
                     )
                 )
-                review_count += 1
-        db.flush()
-        print(f"  -> {review_count} reviews created.")
+                like_count += 1
+        print(f"  -> {like_count} likes created.")
 
         print("Seeding favorites...")
         favorite_count = 0
@@ -190,6 +215,13 @@ def seed():
 
         for follower_id, followed_id in follow_pairs:
             db.add(Follower(follower_id=follower_id, followed_id=followed_id))
+            db.add(
+                Activity(
+                    user_id=follower_id,
+                    type="follow",
+                    target_user_id=followed_id,
+                )
+            )
 
         print(f"  -> {len(follow_pairs)} follow relationships created.")
 
@@ -198,6 +230,7 @@ def seed():
         print(f"Users:     {len(users)}")
         print(f"Reviews:   {review_count}")
         print(f"Favorites: {favorite_count}")
+        print(f"Likes:     {like_count}")
         print(f"Follows:   {len(follow_pairs)}")
 
 

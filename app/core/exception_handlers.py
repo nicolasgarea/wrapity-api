@@ -5,8 +5,10 @@ from app.core.exceptions import (
     AlbumAlreadyInFavoritesException,
     AlbumNotFoundException,
     AlreadyFollowingException,
+    AlreadyLikedException,
     CannotFollowYourselfException,
     CloudinaryUploadException,
+    LikeNotFoundException,
     EmailAlreadyExistsException,
     FavoriteNotFoundException,
     FavoriteSlotAlreadyOccupedException,
@@ -129,3 +131,11 @@ def register_exception_handlers(app):
         return JSONResponse(
             status_code=500, content={"detail": "Failed to upload image"}
         )
+
+    @app.exception_handler(AlreadyLikedException)
+    def already_liked_handler(request: Request, exc: AlreadyLikedException):
+        return JSONResponse(status_code=409, content={"detail": "Review already liked"})
+
+    @app.exception_handler(LikeNotFoundException)
+    def like_not_found_handler(request: Request, exc: LikeNotFoundException):
+        return JSONResponse(status_code=404, content={"detail": "Like not found"})

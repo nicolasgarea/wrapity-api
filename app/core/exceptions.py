@@ -68,3 +68,11 @@ class AlbumNotFoundException(Exception):
 
 class CloudinaryUploadException(Exception):
     pass
+
+
+class AlreadyLikedException(Exception):
+    pass
+
+
+class LikeNotFoundException(Exception):
+    pass

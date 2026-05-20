@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.core.dependencies import get_current_user
 from app.db.database import get_db
 from app.models.user import User
+from app.repositories.activity_repositories import ActivityRepository
 from app.repositories.follower_repositories import FollowerRepository
 from app.repositories.user_repositories import UserRepository
 from app.schemas.follower_schemas import FollowerResponse
@@ -17,7 +18,12 @@ router = APIRouter(prefix="/users", tags=["followers"])
 def get_follower_service(db: Session = Depends(get_db)) -> FollowerService:
     follower_repo = FollowerRepository(db)
     user_repo = UserRepository(db)
-    return FollowerService(follower_repository=follower_repo, user_repository=user_repo)
+    activity_repo = ActivityRepository(db)
+    return FollowerService(
+        follower_repository=follower_repo,
+        user_repository=user_repo,
+        activity_repository=activity_repo,
+    )
 
 
 @router.post(
