@@ -1,5 +1,5 @@
 from app.clients.albums_client import AlbumsClient
-from app.schemas.album_schemas import Album, AlbumSearchResponse
+from app.schemas.album_schemas import Album, AlbumDetail, AlbumSearchResponse
 from app.core.exceptions import AlbumNotFoundException
 
 
@@ -26,9 +26,9 @@ class AlbumService:
         validated = AlbumSearchResponse.model_validate(raw_data)
         return validated.data
 
-    async def get_details(self, album_id: int) -> Album:
+    async def get_details(self, album_id: int) -> AlbumDetail:
         raw_data = await self.client.get_album_by_id(album_id)
         if not raw_data or "error" in raw_data:
             raise AlbumNotFoundException(f"Album {album_id} not found")
 
-        return Album.model_validate(raw_data)
+        return AlbumDetail.model_validate(raw_data)

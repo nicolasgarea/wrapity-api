@@ -36,5 +36,5 @@ async def get_by_id(
     favorite_repo: FavoriteRepository = Depends(get_favorite_repository),
 ):
     album = await service.get_details(album_id)
-    favorite_count = favorite_repo.count_by_album_id(album_id)
-    return AlbumDetail(**album.model_dump(), favorite_count=favorite_count)
+    album.favorite_count = favorite_repo.count_by_album_id(album_id)
+    return album
