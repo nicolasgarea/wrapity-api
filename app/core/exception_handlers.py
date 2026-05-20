@@ -4,6 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.core.exceptions import (
     AlbumAlreadyInFavoritesException,
     AlbumNotFoundException,
+    ArtistNotFoundException,
     AlreadyFollowingException,
     AlreadyLikedException,
     CannotFollowYourselfException,
@@ -124,6 +125,10 @@ def register_exception_handlers(app):
 
     @app.exception_handler(AlbumNotFoundException)
     def album_not_found_handler(request: Request, exc: AlbumNotFoundException):
+        return JSONResponse(status_code=404, content={"detail": str(exc)})
+
+    @app.exception_handler(ArtistNotFoundException)
+    def artist_not_found_handler(request: Request, exc: ArtistNotFoundException):
         return JSONResponse(status_code=404, content={"detail": str(exc)})
 
     @app.exception_handler(CloudinaryUploadException)

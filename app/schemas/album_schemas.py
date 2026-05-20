@@ -5,6 +5,7 @@ class Artist(BaseModel):
     id: int
     name: str
     picture: str | None = None
+    nb_album: int | None = None
 
     @model_validator(mode="before")
     def pick_best_picture(cls, values):
