@@ -76,3 +76,7 @@ class AlreadyLikedException(Exception):
 
 class LikeNotFoundException(Exception):
     pass
+
+
+class ArtistNotFoundException(Exception):
+    pass
