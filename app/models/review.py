@@ -23,6 +23,7 @@ class Review(Base):
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
     user = relationship("User", back_populates="reviews")
+    likes = relationship("Like", back_populates="review", cascade="all, delete-orphan")
 
     __table_args__ = (
         UniqueConstraint("user_id", "album_id", name="uq_review_user_album"),

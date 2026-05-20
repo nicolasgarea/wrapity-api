@@ -37,6 +37,8 @@ class ReviewFeedItemResponse(BaseModel):
     updated_at: datetime
     album: Album
     author: UserPublicResponse
+    likes_count: int = 0
+    liked_by_me: bool = False
 
 
 class ReviewFeedResponse(BaseModel):

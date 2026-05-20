@@ -28,6 +28,8 @@ from app.models.user import User
 from app.models.review import Review
 from app.models.favorite import Favorite
 from app.models.follower import Follower
+from app.models.like import Like
+from app.models.activity import Activity
 from app.db.database import Base
 
 target_metadata = Base.metadata

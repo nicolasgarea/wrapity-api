@@ -4,18 +4,24 @@ from app.core.exceptions import (
     FollowNotFoundException,
     UserNotFoundException,
 )
+from app.models.activity import Activity
 from app.models.follower import Follower
 from app.models.user import User
+from app.repositories.activity_repositories import ActivityRepository
 from app.repositories.follower_repositories import FollowerRepository
 from app.repositories.user_repositories import UserRepository
 
 
 class FollowerService:
     def __init__(
-        self, follower_repository: FollowerRepository, user_repository: UserRepository
+        self,
+        follower_repository: FollowerRepository,
+        user_repository: UserRepository,
+        activity_repository: ActivityRepository,
     ):
         self.follower_repository = follower_repository
         self.user_repository = user_repository
+        self.activity_repository = activity_repository
 
     def follow(self, follower_id: int, followed_id: int) -> Follower:
         if follower_id == followed_id:
@@ -31,7 +37,11 @@ class FollowerService:
             raise UserNotFoundException()
 
         follower = Follower(follower_id=follower_id, followed_id=followed_id)
-        return self.follower_repository.create(follower)
+        created = self.follower_repository.create(follower)
+        self.activity_repository.create(
+            Activity(user_id=follower_id, type="follow", target_user_id=followed_id)
+        )
+        return created
 
     def unfollow(self, follower_id: int, followed_id: int) -> None:
         follow = self.follower_repository.get_by_follower_and_followed(

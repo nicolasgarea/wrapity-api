@@ -2,9 +2,15 @@ from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 
 from app.clients.albums_client import AlbumsClient
-from app.core.dependencies import get_current_user, get_albums_client
+from app.core.dependencies import (
+    get_current_user,
+    get_current_user_optional,
+    get_albums_client,
+)
 from app.db.database import get_db
 from app.models.user import User
+from app.repositories.activity_repositories import ActivityRepository
+from app.repositories.like_repositories import LikeRepository
 from app.repositories.review_repositories import ReviewRepository
 from app.schemas.review_schemas import (
     ReviewCreate,
@@ -24,16 +30,23 @@ def get_review_service(
     albums_client: AlbumsClient = Depends(get_albums_client),
 ) -> ReviewService:
     repo = ReviewRepository(db)
-    return ReviewService(repo, albums_client)
+    activity_repo = ActivityRepository(db)
+    like_repo = LikeRepository(db)
+    return ReviewService(repo, albums_client, activity_repo, like_repo)
 
 
 @router.get("/recent", response_model=list[ReviewFeedItemResponse])
 async def get_recent(
     limit: int = Query(20, ge=1, le=50),
     offset: int = Query(0, ge=0),
+    current_user: User | None = Depends(get_current_user_optional),
     review_service: ReviewService = Depends(get_review_service),
 ) -> list[ReviewFeedItemResponse]:
-    return await review_service.get_recent(limit=limit, offset=offset)
+    return await review_service.get_recent(
+        limit=limit,
+        offset=offset,
+        current_user_id=current_user.id if current_user else None,
+    )
 
 
 @router.get(
@@ -81,7 +94,9 @@ async def get_my_reviews(
     current_user: User = Depends(get_current_user),
     review_service: ReviewService = Depends(get_review_service),
 ) -> list[ReviewFeedItemResponse]:
-    return await review_service.get_by_user_id(current_user.id)
+    return await review_service.get_by_user_id(
+        current_user.id, current_user_id=current_user.id
+    )
 
 
 @router.get("/album/{album_id}", response_model=list[ReviewFeedItemResponse])
@@ -89,10 +104,14 @@ async def get_reviews_by_album(
     album_id: str,
     limit: int = Query(20, ge=1, le=50),
     offset: int = Query(0, ge=0),
+    current_user: User | None = Depends(get_current_user_optional),
     review_service: ReviewService = Depends(get_review_service),
 ) -> list[ReviewFeedItemResponse]:
     return await review_service.get_by_album_id(
-        album_id=album_id, limit=limit, offset=offset
+        album_id=album_id,
+        limit=limit,
+        offset=offset,
+        current_user_id=current_user.id if current_user else None,
     )
 
 
@@ -101,10 +120,14 @@ async def get_reviews_by_user(
     user_id: int,
     limit: int = Query(20, ge=1, le=50),
     offset: int = Query(0, ge=0),
+    current_user: User | None = Depends(get_current_user_optional),
     review_service: ReviewService = Depends(get_review_service),
 ) -> list[ReviewFeedItemResponse]:
     return await review_service.get_by_user_id(
-        user_id=user_id, limit=limit, offset=offset
+        user_id=user_id,
+        limit=limit,
+        offset=offset,
+        current_user_id=current_user.id if current_user else None,
     )
 
 
