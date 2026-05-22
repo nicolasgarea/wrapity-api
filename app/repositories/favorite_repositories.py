@@ -25,7 +25,7 @@ class FavoriteRepository:
         return self.db.query(Favorite).filter_by(id=favorite_id).first()
 
     def count_by_album_id(self, album_id: int) -> int:
-        return self.db.query(Favorite).filter_by(album_id=album_id).count()
+        return self.db.query(Favorite).filter_by(album_id=str(album_id)).count()
 
     def delete_all_by_user_id(self, user_id: int) -> None:
         self.db.query(Favorite).filter_by(user_id=user_id).delete()
