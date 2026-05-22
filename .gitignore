@@ -11,3 +11,12 @@ dist/
 # IDE
 .vscode/
 .idea/
+
+.ruff_cache/
+venv/
+
+# ENV
+.env
+
+# Schematesis
+.hypothesis
