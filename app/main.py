@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from app.clients.albums_client import AlbumsClient
 from app.core.exception_handlers import register_exception_handlers
 from app.routes import register_routers
+from app.core.config import FRONTEND_ORIGINS
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -24,7 +25,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],
+    allow_origins=FRONTEND_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

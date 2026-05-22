@@ -43,6 +43,7 @@ pydantic==2.12.5
 pydantic_core==2.41.5
 Pygments==2.19.2
 PyMySQL==1.1.2
+psycopg2-binary==2.9.10
 pyrate-limiter==4.1.0
 pytest==9.0.2
 python-dotenv==1.2.2
