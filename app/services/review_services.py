@@ -71,6 +71,30 @@ class ReviewService:
         reviews = self.review_repository.get_recent(limit=limit, offset=offset)
         return await self._embed_albums(reviews, current_user_id)
 
+    async def get_popular(
+        self,
+        days: int = 7,
+        limit: int = 20,
+        offset: int = 0,
+        current_user_id: int | None = None,
+    ) -> list[ReviewFeedItemResponse]:
+        reviews = self.review_repository.get_popular(
+            days=days, limit=limit, offset=offset
+        )
+        return await self._embed_albums(reviews, current_user_id)
+
+    async def get_liked_by_user(
+        self,
+        user_id: int,
+        limit: int = 20,
+        offset: int = 0,
+        current_user_id: int | None = None,
+    ) -> list[ReviewFeedItemResponse]:
+        reviews = self.review_repository.get_liked_by_user(
+            user_id=user_id, limit=limit, offset=offset
+        )
+        return await self._embed_albums(reviews, current_user_id)
+
     async def get_following_feed(
         self, user_id: int, limit: int, offset: int = 0
     ) -> list[ReviewFeedItemResponse]:
@@ -84,6 +108,17 @@ class ReviewService:
         if not review:
             raise ReviewNotFoundException()
         return review
+
+    async def get_by_id_detail(
+        self, review_id: int, current_user_id: int | None = None
+    ) -> ReviewFeedItemResponse:
+        review = self.review_repository.get_by_id(review_id)
+        if not review:
+            raise ReviewNotFoundException()
+        items = await self._embed_albums([review], current_user_id)
+        if not items:
+            raise ReviewNotFoundException()
+        return items[0]
 
     def update(
         self, user_id: int, review_id: int, rating: int | None, content: str | None

@@ -14,7 +14,7 @@ services:
       - key: ALGORITHM
         value: HS256
       - key: ACCESS_TOKEN_EXPIRE_MINUTES
-        value: "525600"
+        value: "10080"
       - key: DEEZER_BASE_URL
         value: https://api.deezer.com
       - key: DATABASE_URL

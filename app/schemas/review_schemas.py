@@ -1,8 +1,7 @@
-from datetime import datetime
-
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.schemas.album_schemas import Album
+from app.schemas.common import UtcDatetime
 from app.schemas.user_schemas import UserPublicResponse
 
 
@@ -18,8 +17,8 @@ class ReviewResponse(BaseModel):
     album_id: int
     rating: int
     content: str | None = None
-    created_at: datetime
-    updated_at: datetime
+    created_at: UtcDatetime
+    updated_at: UtcDatetime
     user: UserPublicResponse
 
 
@@ -33,8 +32,8 @@ class ReviewFeedItemResponse(BaseModel):
     id: int
     rating: int
     content: str | None = None
-    created_at: datetime
-    updated_at: datetime
+    created_at: UtcDatetime
+    updated_at: UtcDatetime
     album: Album
     author: UserPublicResponse
     likes_count: int = 0

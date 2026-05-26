@@ -1,6 +1,6 @@
-from datetime import datetime
-
 from pydantic import BaseModel, ConfigDict
+
+from app.schemas.common import UtcDatetime
 
 
 class FollowerResponse(BaseModel):
@@ -8,4 +8,4 @@ class FollowerResponse(BaseModel):
 
     follower_id: int
     followed_id: int
-    created_at: datetime
+    created_at: UtcDatetime

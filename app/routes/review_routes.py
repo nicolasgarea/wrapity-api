@@ -49,6 +49,22 @@ async def get_recent(
     )
 
 
+@router.get("/popular", response_model=list[ReviewFeedItemResponse])
+async def get_popular(
+    days: int = Query(7, ge=1, le=30),
+    limit: int = Query(20, ge=1, le=50),
+    offset: int = Query(0, ge=0),
+    current_user: User | None = Depends(get_current_user_optional),
+    review_service: ReviewService = Depends(get_review_service),
+) -> list[ReviewFeedItemResponse]:
+    return await review_service.get_popular(
+        days=days,
+        limit=limit,
+        offset=offset,
+        current_user_id=current_user.id if current_user else None,
+    )
+
+
 @router.get(
     "/following",
     response_model=ReviewFeedResponse,
@@ -127,6 +143,34 @@ async def get_reviews_by_user(
         user_id=user_id,
         limit=limit,
         offset=offset,
+        current_user_id=current_user.id if current_user else None,
+    )
+
+
+@router.get("/liked-by/{user_id}", response_model=list[ReviewFeedItemResponse])
+async def get_reviews_liked_by_user(
+    user_id: int,
+    limit: int = Query(20, ge=1, le=50),
+    offset: int = Query(0, ge=0),
+    current_user: User | None = Depends(get_current_user_optional),
+    review_service: ReviewService = Depends(get_review_service),
+) -> list[ReviewFeedItemResponse]:
+    return await review_service.get_liked_by_user(
+        user_id=user_id,
+        limit=limit,
+        offset=offset,
+        current_user_id=current_user.id if current_user else None,
+    )
+
+
+@router.get("/{review_id}", response_model=ReviewFeedItemResponse)
+async def get_review_detail(
+    review_id: int,
+    current_user: User | None = Depends(get_current_user_optional),
+    review_service: ReviewService = Depends(get_review_service),
+) -> ReviewFeedItemResponse:
+    return await review_service.get_by_id_detail(
+        review_id=review_id,
         current_user_id=current_user.id if current_user else None,
     )
 
