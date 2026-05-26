@@ -71,6 +71,18 @@ class ReviewService:
         reviews = self.review_repository.get_recent(limit=limit, offset=offset)
         return await self._embed_albums(reviews, current_user_id)
 
+    async def get_popular(
+        self,
+        days: int = 7,
+        limit: int = 20,
+        offset: int = 0,
+        current_user_id: int | None = None,
+    ) -> list[ReviewFeedItemResponse]:
+        reviews = self.review_repository.get_popular(
+            days=days, limit=limit, offset=offset
+        )
+        return await self._embed_albums(reviews, current_user_id)
+
     async def get_following_feed(
         self, user_id: int, limit: int, offset: int = 0
     ) -> list[ReviewFeedItemResponse]:

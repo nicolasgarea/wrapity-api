@@ -49,6 +49,22 @@ async def get_recent(
     )
 
 
+@router.get("/popular", response_model=list[ReviewFeedItemResponse])
+async def get_popular(
+    days: int = Query(7, ge=1, le=30),
+    limit: int = Query(20, ge=1, le=50),
+    offset: int = Query(0, ge=0),
+    current_user: User | None = Depends(get_current_user_optional),
+    review_service: ReviewService = Depends(get_review_service),
+) -> list[ReviewFeedItemResponse]:
+    return await review_service.get_popular(
+        days=days,
+        limit=limit,
+        offset=offset,
+        current_user_id=current_user.id if current_user else None,
+    )
+
+
 @router.get(
     "/following",
     response_model=ReviewFeedResponse,

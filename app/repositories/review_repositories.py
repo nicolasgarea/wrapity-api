@@ -1,7 +1,9 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 from app.models.follower import Follower
+from app.models.like import Like
 from app.models.review import Review
 
 
@@ -76,6 +78,22 @@ class ReviewRepository:
             self.db.query(Review)
             .options(joinedload(Review.user))
             .order_by(Review.created_at.desc())
+            .limit(limit)
+            .offset(offset)
+            .all()
+        )
+
+    def get_popular(
+        self, days: int = 7, limit: int = 20, offset: int = 0
+    ) -> list[Review]:
+        since = datetime.now(timezone.utc) - timedelta(days=days)
+        return (
+            self.db.query(Review)
+            .options(joinedload(Review.user))
+            .outerjoin(Like, Like.review_id == Review.id)
+            .filter(Review.created_at >= since)
+            .group_by(Review.id)
+            .order_by(func.count(Like.id).desc(), Review.created_at.desc())
             .limit(limit)
             .offset(offset)
             .all()
