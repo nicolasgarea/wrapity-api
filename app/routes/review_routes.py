@@ -163,6 +163,18 @@ async def get_reviews_liked_by_user(
     )
 
 
+@router.get("/{review_id}", response_model=ReviewFeedItemResponse)
+async def get_review_detail(
+    review_id: int,
+    current_user: User | None = Depends(get_current_user_optional),
+    review_service: ReviewService = Depends(get_review_service),
+) -> ReviewFeedItemResponse:
+    return await review_service.get_by_id_detail(
+        review_id=review_id,
+        current_user_id=current_user.id if current_user else None,
+    )
+
+
 @router.patch("/{review_id}", response_model=ReviewResponse)
 def update_review(
     review_schema: ReviewUpdate,

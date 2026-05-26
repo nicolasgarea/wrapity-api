@@ -109,6 +109,17 @@ class ReviewService:
             raise ReviewNotFoundException()
         return review
 
+    async def get_by_id_detail(
+        self, review_id: int, current_user_id: int | None = None
+    ) -> ReviewFeedItemResponse:
+        review = self.review_repository.get_by_id(review_id)
+        if not review:
+            raise ReviewNotFoundException()
+        items = await self._embed_albums([review], current_user_id)
+        if not items:
+            raise ReviewNotFoundException()
+        return items[0]
+
     def update(
         self, user_id: int, review_id: int, rating: int | None, content: str | None
     ) -> Review:
