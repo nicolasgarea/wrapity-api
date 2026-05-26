@@ -1,6 +1,6 @@
-from datetime import datetime
-
 from pydantic import BaseModel, ConfigDict
+
+from app.schemas.common import UtcDatetime
 
 
 class LikeResponse(BaseModel):
@@ -9,7 +9,7 @@ class LikeResponse(BaseModel):
     id: int
     user_id: int
     review_id: int
-    created_at: datetime
+    created_at: UtcDatetime
 
 
 class LikeCountResponse(BaseModel):
