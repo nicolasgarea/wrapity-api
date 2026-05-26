@@ -53,7 +53,7 @@ class ReviewRepository:
         if rating is not None:
             review.rating = rating
         if rating or content:
-            review.updated_at = datetime.now(timezone.utc)
+            review.updated_at = datetime.now(timezone.utc).replace(tzinfo=None)
 
         self.db.commit()
         self.db.refresh(review)
@@ -100,7 +100,7 @@ class ReviewRepository:
     def get_popular(
         self, days: int = 7, limit: int = 20, offset: int = 0
     ) -> list[Review]:
-        since = datetime.now(timezone.utc) - timedelta(days=days)
+        since = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=days)
         return (
             self.db.query(Review)
             .options(joinedload(Review.user))
