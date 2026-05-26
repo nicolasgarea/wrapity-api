@@ -83,6 +83,20 @@ class ReviewRepository:
             .all()
         )
 
+    def get_liked_by_user(
+        self, user_id: int, limit: int = 20, offset: int = 0
+    ) -> list[Review]:
+        return (
+            self.db.query(Review)
+            .options(joinedload(Review.user))
+            .join(Like, Like.review_id == Review.id)
+            .filter(Like.user_id == user_id)
+            .order_by(Like.created_at.desc())
+            .limit(limit)
+            .offset(offset)
+            .all()
+        )
+
     def get_popular(
         self, days: int = 7, limit: int = 20, offset: int = 0
     ) -> list[Review]:

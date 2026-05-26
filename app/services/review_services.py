@@ -83,6 +83,18 @@ class ReviewService:
         )
         return await self._embed_albums(reviews, current_user_id)
 
+    async def get_liked_by_user(
+        self,
+        user_id: int,
+        limit: int = 20,
+        offset: int = 0,
+        current_user_id: int | None = None,
+    ) -> list[ReviewFeedItemResponse]:
+        reviews = self.review_repository.get_liked_by_user(
+            user_id=user_id, limit=limit, offset=offset
+        )
+        return await self._embed_albums(reviews, current_user_id)
+
     async def get_following_feed(
         self, user_id: int, limit: int, offset: int = 0
     ) -> list[ReviewFeedItemResponse]:

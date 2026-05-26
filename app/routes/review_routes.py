@@ -147,6 +147,22 @@ async def get_reviews_by_user(
     )
 
 
+@router.get("/liked-by/{user_id}", response_model=list[ReviewFeedItemResponse])
+async def get_reviews_liked_by_user(
+    user_id: int,
+    limit: int = Query(20, ge=1, le=50),
+    offset: int = Query(0, ge=0),
+    current_user: User | None = Depends(get_current_user_optional),
+    review_service: ReviewService = Depends(get_review_service),
+) -> list[ReviewFeedItemResponse]:
+    return await review_service.get_liked_by_user(
+        user_id=user_id,
+        limit=limit,
+        offset=offset,
+        current_user_id=current_user.id if current_user else None,
+    )
+
+
 @router.patch("/{review_id}", response_model=ReviewResponse)
 def update_review(
     review_schema: ReviewUpdate,
