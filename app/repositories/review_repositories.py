@@ -101,13 +101,23 @@ class ReviewRepository:
         self, days: int = 7, limit: int = 20, offset: int = 0
     ) -> list[Review]:
         since = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=days)
+        likes_counts = (
+            self.db.query(
+                Like.review_id.label("review_id"),
+                func.count(Like.id).label("cnt"),
+            )
+            .group_by(Like.review_id)
+            .subquery()
+        )
         return (
             self.db.query(Review)
             .options(joinedload(Review.user))
-            .outerjoin(Like, Like.review_id == Review.id)
+            .outerjoin(likes_counts, likes_counts.c.review_id == Review.id)
             .filter(Review.created_at >= since)
-            .group_by(Review.id)
-            .order_by(func.count(Like.id).desc(), Review.created_at.desc())
+            .order_by(
+                func.coalesce(likes_counts.c.cnt, 0).desc(),
+                Review.created_at.desc(),
+            )
             .limit(limit)
             .offset(offset)
             .all()
