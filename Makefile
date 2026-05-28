@@ -19,7 +19,7 @@ test:
 	venv/bin/python -m pytest
 
 db_up:
-	docker compose up -d
+	docker compose up -d db
 
 db_down:
 	docker compose down
@@ -39,7 +39,7 @@ seed:
 
 fresh:
 	docker compose down -v
-	docker compose up -d
+	docker compose up -d db
 	sleep 15
 	venv/bin/alembic upgrade head
 	$(MAKE) seed
