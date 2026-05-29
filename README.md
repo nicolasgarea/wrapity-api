@@ -47,7 +47,7 @@ Full interactive reference at `/docs` when the server is running.
 
 ## Database
 
-![ER Diagram](docs/er-diagram.png)
+![Relational model](docs/relational-model.png)
 
 Migrations are managed with Alembic. Files live in `migrations/versions/`.
 
