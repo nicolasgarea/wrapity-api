@@ -1,3 +1,5 @@
+<div align="center">
+
 # Wrapity API
 
 REST API for [Wrapity](https://github.com/nicolasgarea/wrapity-web) — music reviews, social features, JWT auth.
@@ -8,11 +10,17 @@ REST API for [Wrapity](https://github.com/nicolasgarea/wrapity-web) — music re
 [![CI](https://github.com/nicolasgarea/wrapity-api/actions/workflows/ci.yml/badge.svg)](https://github.com/nicolasgarea/wrapity-api/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
----
+</div>
+
+<br/>
+
+## Why this project?
+
+One rule kept the codebase honest: routes validate and delegate, services own logic, repositories own queries — nothing crosses the boundary. Each layer is independently testable and adding a feature never requires touching code that shouldn't care about it.
+
+Built with FastAPI, SQLAlchemy, Alembic for migrations, and httpx for async requests to the Deezer API and Cloudinary.
 
 ## Architecture
-
-Routes validate and delegate. Services own the logic. Repositories own the queries.
 
 ```
 HTTP Request
@@ -24,7 +32,7 @@ HTTP Request
   Services        ← business logic, orchestration
      │
      ▼
-  Repositories    ← all database queries (SQLAlchemy async)
+  Repositories    ← all database queries (SQLAlchemy)
      │
      ▼
   Database        ← MySQL 8.0
@@ -34,17 +42,6 @@ HTTP Request
      └── Cloudinary      ← avatar image uploads
 ```
 
----
-
-## Endpoints
-
-Covers auth, users, albums, artists, reviews, likes, favorites, and activity.
-Full interactive reference at `/docs` when the server is running.
-
-![Swagger UI](docs/swagger.png)
-
----
-
 ## Database
 
 ![Relational model](docs/relational-model.png)
@@ -52,42 +49,29 @@ Full interactive reference at `/docs` when the server is running.
 Migrations are managed with Alembic. Files live in `migrations/versions/`.
 
 ```bash
-# Create a migration after model changes
 venv/bin/alembic revision --autogenerate -m "description"
-
-# Apply pending migrations
 venv/bin/alembic upgrade head
 ```
-
----
 
 ## Quick Start
 
 **Requirements:** Python 3.12, Docker.
 
 ```bash
-# 1. Create virtual environment and install dependencies
 python -m venv venv
 pip install -r requirements.txt
 
-# 2. Configure environment variables
 cp .env.example .env
 
-# 3. Start the local MySQL database
 docker compose up -d
 
-# 4. Run migrations
 venv/bin/alembic upgrade head
 
-# 5. (Optional) Seed with sample data
 make seed
 
-# 6. Start the dev server
 make run
 # http://localhost:8000
 ```
-
-### Commands
 
 | Command | Description |
 |---|---|
@@ -102,8 +86,6 @@ make run
 
 CI runs pytest, Ruff format, and Ruff lint on every push to `develop` and `main`.
 
----
-
 ## Configuration
 
 Copy `.env.example` to `.env` and fill in the values.
@@ -111,7 +93,7 @@ Copy `.env.example` to `.env` and fill in the values.
 | Variable | Description | Default |
 |---|---|---|
 | `DATABASE_URL` | SQLAlchemy connection string | `mysql+pymysql://...` |
-| `SECRET_KEY` | JWT signing key — generate with `openssl rand -hex 32` | — |
+| `SECRET_KEY` | JWT signing key | — |
 | `ALGORITHM` | JWT algorithm | `HS256` |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | Token expiry in minutes | — |
 | `DEEZER_BASE_URL` | Deezer API base URL | `https://api.deezer.com` |
@@ -119,7 +101,7 @@ Copy `.env.example` to `.env` and fill in the values.
 | `CLOUDINARY_API_KEY` | Cloudinary API key | — |
 | `CLOUDINARY_API_SECRET` | Cloudinary API secret | — |
 
----
+Generate a secret key with `openssl rand -hex 32`.
 
 ## Project Structure
 
@@ -135,7 +117,7 @@ app/
 │   ├── dependencies.py  ← Auth dependencies injected into routes
 │   └── exceptions.py    ← Custom exception types
 ├── db/
-│   └── database.py      ← SQLAlchemy async engine and session
+│   └── database.py      ← SQLAlchemy engine and session
 ├── models/              ← SQLAlchemy ORM models
 ├── repositories/        ← Database queries, one file per model
 ├── services/            ← Business logic, one file per domain
@@ -149,8 +131,6 @@ tests/
 └── unit/
     └── test_favorite_service.py
 ```
-
----
 
 ## Roadmap
 
@@ -166,8 +146,6 @@ tests/
 - [x] Album and artist search via Deezer
 - [x] Avatar upload via Cloudinary
 
----
-
 ## License
 
-MIT
+[MIT](LICENSE)
