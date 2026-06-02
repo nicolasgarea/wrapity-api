@@ -1,8 +1,12 @@
-from pydantic import BaseModel, ConfigDict, Field, EmailStr
+from typing import Annotated
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, StringConstraints
 
 
 class UserRegister(BaseModel):
-    username: str = Field(..., min_length=3, max_length=20)
+    username: Annotated[
+        str, StringConstraints(strip_whitespace=True, min_length=3, max_length=20)
+    ]
     email: EmailStr
     password: str = Field(..., min_length=8)
 
@@ -23,7 +27,12 @@ class UserResponse(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    username: str | None = Field(None, min_length=3, max_length=50)
+    username: (
+        Annotated[
+            str, StringConstraints(strip_whitespace=True, min_length=3, max_length=50)
+        ]
+        | None
+    ) = None
     bio: str | None = Field(None, max_length=300)
     avatar_url: str | None = None
 
